@@ -19,7 +19,7 @@ var manager = require('./routes/manager');
 expressValidator = require('express-validator');
 
 mongoose.Promise = global.Promise;
-mongoose.connect('localhost:27017/HRMS');
+mongoose.connect('mongodb://localhost:27017/HRMS');
 
 require('./config/passport.js');
 var app = express();
