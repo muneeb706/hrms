@@ -1,0 +1,60 @@
+﻿
+
+    
+    #bottombar{
+      
+        text-decoration-color:white;
+          background-color:rgba(0, 0, 0, 0.8);
+        padding-top:1.3%;
+       
+        font-size:small;
+        padding-left:18%;
+         padding-bottom:1.3%;
+        
+    }
+
+        #background 
+        {
+            background: url(/images/log.jpg) repeat-x scroll 0 0 #f4fbff;
+          position:absolute;
+    padding:0;
+    margin:0;
+    top: 0; left: 0;
+   right:0;
+            height: 690px;
+            border: 1px solid lightgrey;
+              background-repeat:no-repeat;
+            background-position:center;
+            background-size:cover;
+        }
+        div.transbox
+        {
+          margin-top: 9%;
+          margin-left:35%;
+            max-width:250px;
+          min-width:250px;
+          background-color:rgba(255, 255, 255, 0.7);
+          border: 1px solid whitesmoke;
+          border-radius:3px;
+          padding-left:3%;
+           padding-right:8%;
+
+        }
+        
+        .txtboxattributes1{
+            width: 126%;
+            background-color:rgba(255, 255, 255, 0.71);
+            border:1px solid #666;
+            border-radius:2px;
+        }
+        #btnSignIn{
+           height : 35px;
+            background-color:#111e41;
+            border:1px solid #666;
+            border-radius:2px;
+            text-align:center;
+            width: 127%;
+            color:white;  text-shadow: 0 0 3px black;
+        }
+
+ 

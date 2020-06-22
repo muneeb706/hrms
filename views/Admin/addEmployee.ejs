@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HRMS|<%= title %></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css"/>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/stylesheets/simple-sidebar.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap-select.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+
+</head>
+<body>
+<nav class="navbar navbar-default no-margin">
+    <!-- Brand and toggle get grouped for better mobile display -->
+
+    <div class="navbar-header fixed-brand">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" id="menu-toggle">
+            <span class="glyphicon glyphicon-th-large" style="margin-left:5px;" aria-hidden="true"></span>
+        </button>
+        <a class="navbar-brand" href="#"><i class="fa fa-a fa-4"></i> <%= userName %></a>
+    </div><!-- navbar-header-->
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li class="active">
+                <button class="navbar-toggle collapse in" data-toggle="collapse" id="menu-toggle-2"><span
+                            class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+            </li>
+            <li class="navbar-brand">
+                <form action="/logout" method="get">
+                    <button id="logout" type="submit" style="margin-top: -3px;" class="btn btn-default"><i
+                                class="fa fa-user" aria-hidden="true"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div><!-- bs-example-navbar-collapse-1 -->
+</nav>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
+
+            <li>
+                <a href="#" id="menu3"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-users fa-stack-1x "></i></span> Employees</a>
+                <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                    <li><a href="/admin/view-all-employees"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-eye fa-stack-1x "></i></span>View Employees</a></li>
+                    <li class="active"><a href="/admin/add-employee"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-plus fa-stack-1x "></i></span>Add Employees</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="/admin/leave-applications"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-envelope-square fa-stack-1x "></i></span> Leave Applications</a></li>
+            <li data-toggle="modal" data-target="#myModal">
+                <a href="#"> <span class="fa-stack fa-lg pull-left"><i class="fa fa-list-ol fa-stack-1x "></i></span>View
+                    Attendance</a>
+            </li>
+            <li data-toggle="modal" data-target="#myModal2">
+                <a href="#"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-check-circle fa-stack-1x "></i></span>Mark Attendance</a>
+            </li>
+            <li>
+                <a href="/admin/view-profile"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-user fa-stack-1x "></i></span>View Profile</a>
+            </li>
+        </ul>
+    </div><!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid xyz">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Employee Details</h1>
+                    <div id="menu1" style=" height:717px ;overflow: auto;">
+
+                        <form class="form-group-sm" action="/admin/add-employee" method="post">
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <% if (hasErrors){ %>
+                                <input type="text" onkeypress="return onlyAlphabets(event,this);" class="form-control"
+                                       value="<%= user.name %>" required="required" id="name" name="name">
+                                <% }else{ %>
+                                <input type="text" onkeypress="return onlyAlphabets(event,this);" class="form-control"
+                                       required="required" id="name" name="name">
+                                <% } %>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address:</label>
+                                <% if (hasErrors){ %>
+                                <input type="email" class="form-control" value="<%= user.email %>" required="required"
+                                       id="email" name="email">
+                                <% }else{ %>
+                                <input type="email" class="form-control" required="required" id="email" name="email">
+                                <% } %>
+                                <% if(hasErrors){ %>
+                                <% messages.forEach(function(item){
+                                if(item === "Email is already in use"){
+                                %>
+                                <label style="color: red;" id="message"><%= item %></label>
+                                <% }
+                                }) %>
+
+                                <% } %>
+                            </div>
+                            <div class="form-group">
+                                <label for="DOB">Date of Birth:</label>
+                                <% if (hasErrors){ %>
+                                <input type="date" class="form-control"
+                                       value="<%= new Date(user.dateOfBirth).toISOString().substring(0, 10); %>"
+                                       required="required" id="DOB" name="DOB">
+                                <% }else{ %>
+                                <input type="date" class="form-control" required="required" id="DOB" name="DOB">
+                                <% } %>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="pwd">Password:</label>
+
+                                <input type="password" minlength="6" required="required" class="form-control"
+                                       id="password" name="password">
+
+                            </div>
+                            <div class="form-group">
+                                <label for="number">Contact Number:</label>
+                                <% if (hasErrors){ %>
+                                <input type="text" pattern="03[0-9]{2}-(?!1234567)(?!1111111)(?!7654321)[0-9]{7}"
+                                       value="<%= user.contactNumber %>" class="form-control" required="required"
+                                       placeholder="e.g. XXXX-XXXXXXX" id="number" name="number">
+                                <% }else{ %>
+                                <input type="text" pattern="03[0-9]{2}-(?!1234567)(?!1111111)(?!7654321)[0-9]{7}"
+                                       class="form-control" required="required" placeholder="e.g. XXXX-XXXXXXX"
+                                       id="number" name="number">
+                                <% } %>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="department">Department:</label>
+                                <% if (hasErrors){ %>
+                                <select class="form-control" id="department" name="department">
+                                    <option value="<%= user.department %>"><%= user.department %></option>
+                                    <% if (user.department != "N/A"){ %>
+                                    <option value="N/A">N/A</option>
+                                    <% } %>
+                                    <% if (user.department != "Human Resource"){ %>
+                                    <option value="Human Resource">Human Resource</option>
+                                    <% } %>
+                                    <% if (user.department != "Software Development"){ %>
+                                    <option value="Software Development">Software Development</option>
+                                    <% } %>
+                                    <% if (user.department != "IT consulting"){ %>
+                                    <option value="IT consulting">IT consulting</option>
+                                    <% } %>
+                                    <% if (user.department != "Quality Assurance"){ %>
+                                    <option value="Quality Assurance">Quality Assurance</option>
+                                    <% } %>
+                                    <% if (user.department != "Accounts"){ %>
+                                    <option value="Accounts">Accounts</option>
+                                    <% } %>
+                                    <% if (user.department != "Marketing"){ %>
+                                    <option value="Marketing">Marketing</option>
+                                    <% } %>
+                                    <% if (user.department != "Business Analysis"){ %>
+                                    <option value="Business Analysis">Business Analysis</option>
+                                    <% } %>
+                                </select>
+
+                                <% }else{ %>
+                                <select class="form-control" id="department" name="department">
+                                    <option value="N/A">N/A</option>
+                                    <option value="Human Resource">Human Resource</option>
+                                    <option value="Software Development">Software Development</option>
+                                    <option value="IT consulting">IT consulting</option>
+                                    <option value="Quality Assurance">Quality Assurance</option>
+                                    <option value="Accounts">Accounts</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Business Analysis">Business Analysis</option>
+                                </select>
+                                <% } %>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="skills">Skills:</label><br>
+                                <% if (hasErrors && typeof user.Skills != "undefined"){ %>
+
+                                <select class="selectpicker" id="skills" name="skills[]" multiple>
+                                    <%
+                                    user.Skills.forEach(function(val){
+                                    if(val != ""){ %>
+                                    <option selected="selected"><%= val %></option>
+                                    <% }
+                                    });
+                                    %>
+                                    <% if (user.Skills.indexOf("Front End") < 0){ %>
+                                    <option>Front End</option>
+                                    <% } %>
+
+                                    <% if (user.Skills.indexOf("ROR") < 0){ %>
+                                    <option>ROR</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf(".NET") < 0){ %>
+                                    <option>.NET</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf("PHP") < 0){ %>
+                                    <option>PHP</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf("Python Django (ERP)") < 0){ %>
+                                    <option>Python Django (ERP)</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf("Mobile Development") < 0){ %>
+                                    <option>Mobile Development</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf("Big Data Analytics") < 0){ %>
+                                    <option>Big Data Analytics</option>
+                                    <% } %>
+                                    <% if (user.Skills.indexOf("Firmware") < 0){ %>
+                                    <option>Firmware</option>
+                                    <% } %>
+                                </select>
+
+                                <% }else{ %>
+
+                                <select class="selectpicker" id="skills" name="skills[]" multiple>
+                                    <option>N/A</option>
+                                    <option>ROR</option>
+                                    <option>.NET</option>
+                                    <option>PHP</option>
+                                    <option>Python Django (ERP)</option>
+                                    <option>Mobile Development</option>
+                                    <option>Big Data Analytics</option>
+                                    <option>Firmware</option>
+
+                                </select>
+
+                                <% } %>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="designation">Designation:</label>
+                                <% if (hasErrors){ %>
+
+                                <select class="form-control" id="designation" name="designation">
+                                    <option value="<%= user.designation %>"><%= user.designation %></option>
+                                    <% if (user.designation != "N/A"){ %>
+                                    <option value="N/A">N/A</option>
+                                    <% } %>
+                                    <% if (user.designation != "System Analyst"){ %>
+                                    <option value="System Analyst">System Analyst</option>
+                                    <% } %>
+                                    <% if (user.designation != "Accounts Manager"){ %>
+                                    <option value="Accounts Manager">Accounts Manager</option>
+                                    <% } %>
+                                    <% if (user.designation != "Project Manager"){ %>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <% } %>
+                                    <% if (user.designation != "Software Engineer"){ %>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <% } %>
+                                    <% if (user.designation != "Sr.Software Engineer"){ %>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <% } %>
+                                    <% if (user.designation != "Project Lead"){ %>
+                                    <option value="Project Lead">Project Lead</option>
+                                    <% } %>
+                                    <% if (user.designation != "Business Analyst"){ %>
+                                    <option value="Business Analyst">Business Analyst</option>
+                                    <% } %>
+                                    <% if (user.designation != "Human Resource Manager"){ %>
+                                    <option value="Human Resource Manager">Human Resource Manager</option>
+                                    <% } %>
+                                    <% if (user.designation != "Software Developer"){ %>
+                                    <option value="Software Developer">Software Developer</option>
+                                    <% } %>
+                                    <% if (user.designation != "Quality Analyst"){ %>
+                                    <option value="Quality Analyst">Quality Analyst</option>
+                                    <% } %>
+                                </select>
+
+                                <% }else{ %>
+
+                                <select class="form-control" id="designation" name="designation">
+                                    <option value="N/A">N/A</option>
+                                    <option value="System Analyst">System Analyst</option>
+                                    <option value="Accounts Manager">Accounts Manager</option>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Project Lead">Project Lead</option>
+                                    <option value="Business Analyst">Business Analyst</option>
+                                    <option value="Human Resource Manager">Human Resource Manager</option>
+                                    <option value="Software Developer">Software Developer</option>
+                                    <option value="Quality Analyst">Quality Analyst</option>
+                                </select>
+                                <% } %>
+                            </div>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="button" onclick="history.go(-1);" class="btn btn-default">Cancel</button>
+                            <button type="submit" class="btn btn-default">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.js" charset="UTF-8"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" charset="UTF-8"></script>
+<script src="/javascripts/sidebar_menu.js"></script>
+<script src="/javascripts/bootstrap-select.min.js"></script>
+<script language="Javascript" type="text/javascript">
+
+    function onlyAlphabets(e, t) {
+        try {
+            if (window.event) {
+                var charCode = window.event.keyCode;
+            }
+            else if (e) {
+                var charCode = e.which;
+            }
+            else {
+                return true;
+            }
+            if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123 || charCode === 32))
+                return true;
+            else
+                return false;
+        }
+        catch (err) {
+            alert(err.Description);
+        }
+    }
+
+</script>
+<script>
+
+    $(document).ready(function () {
+        $('.selectpicker').selectpicker();
+        $('#menu3').click();
+        var box1height = $('#menu1').height();
+        // Set box2 height equal to box1
+        $('#sidebar-wrapper').height(box1height * 1.2);
+        for (i = new Date().getFullYear(); i > 1950; i--) {
+            $('#year').append($('<option />').val(i).html(i));
+        }
+
+    });
+</script>
+</body>
+
+<div id="myModal2" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <form method="post" action="/admin/mark-attendance">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Mark Attendance</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to mark attendance.</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="reset" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-default">Yes</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <form method="post" action="/admin/view-attendance">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select Month/Year</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Month">Month:</label>
+                        <select class="form-control" id="month" name="month">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year:</label>
+                        <select class="form-control" id="year" name="year">
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="reset" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-default">View</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+</html>
