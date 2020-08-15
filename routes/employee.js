@@ -18,7 +18,7 @@ router.use('/', isLoggedIn, function checkAuthentication(req, res, next) {
  * Description:
  * Displays home page to the employee.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -36,7 +36,7 @@ router.get('/', function viewHome(req, res, next) {
  * Description:
  * Displays leave application form to the user.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 27th November, 2016
  *
@@ -55,7 +55,7 @@ router.get('/apply-for-leave', function applyForLeave(req, res, next) {
  * Description:
  * Displays the list of all applied laves of the user.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -90,7 +90,7 @@ router.get('/applied-leaves', function viewAppliedLeaves(req, res, next) {
  * Description:
  * Displays the attendance to the user.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 27th November, 2016
  *
@@ -130,7 +130,7 @@ router.post('/view-attendance', function viewAttendanceSheet(req, res, next) {
  * Description:
  * Display currently marked attendance to the user.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -168,7 +168,7 @@ router.get('/view-attendance-current', function viewCurrentlyMarkedAttendance(re
  * Description:
  * Displays employee his/her profile.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -197,7 +197,7 @@ router.get('/view-profile', function viewProfile(req, res, next) {
  * Description:
  * Displays the list of all the projects to the Project Schema.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -232,7 +232,7 @@ router.get('/view-all-projects', function viewAllProjects(req, res, next) {
  * Displays the employee his/her project infomation by
  * getting project id from the request parameters.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -263,7 +263,7 @@ router.get('/view-project/:project_id', function viewProject(req, res, next) {
  * Description:
  * Saves the applied leave application form in Leave Schema.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -295,7 +295,7 @@ router.post('/apply-for-leave', function applyForLeave(req, res, next) {
  * Description:
  * Marks the attendance of the employee in Attendance Schema
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated:
  *

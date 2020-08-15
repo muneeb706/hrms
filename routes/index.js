@@ -28,7 +28,7 @@ router.post('/signup', passport.authenticate('local.signup', {
  * Description:
  * Displays login page to the user
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 26th November, 2016
  *
@@ -50,7 +50,7 @@ router.get('/', function viewLoginPage(req, res, next) {
  * Description:
  * Logs user out from the application by clearing its session.
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 26th November, 2016
  *
@@ -81,7 +81,7 @@ router.get('/dummy', function (req, res, next) {
  * Description:
  * Checks which type of user has logged in to the system
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 26th November, 2016
  *
@@ -109,7 +109,7 @@ router.get('/check-type', function checkTypeOfLoggedInUser(req, res, next) {
  * Description:
  * Authenticates user login request and on success redirects user to his/her home page
  *
- * Author: Hassan Qureshi
+
  *
  * Last Updated: 26th November, 2016
  *

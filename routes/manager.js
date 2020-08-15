@@ -20,7 +20,7 @@ router.use('/', isLoggedIn, function checkAuthentication(req, res, next) {
  * Description:
  * Displays home to the manager
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -45,7 +45,7 @@ router.get('/', function viewHomePage(req, res, next) {
  * Then it enters the data in UserSalary Schema if user is not present.
  * Otherwise gets the data from UserSalary Schema and shows the salary of the employees to the accounts manager
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -142,7 +142,7 @@ router.get('/view-employees', function viewEmployees(req, res) {
  * Description:
  * Displays All the skills of the employee to the project manager.
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -213,7 +213,7 @@ router.get('/all-employee-projects/:id', function viewAllEmployeeProjects(req, r
  * Description:
  * Displays employee project information to the project manager
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -250,7 +250,7 @@ router.get('/employee-project-info/:id', function viewEmployeeProjectInfo(req, r
  * Description:
  * Displays the performance appraisal form for the employee to the project manager.
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -303,7 +303,6 @@ router.get('/provide-performance-appraisal/:id', function providePerformanceAppr
  * Description:
  * Displays currently marked attendance to the manager.
  *
- * Author: Hassan Qureshi
  *
  * Last Updated: 30th November, 2016
  *
@@ -342,7 +341,7 @@ router.get('/view-attendance-current', function viewCurrentMarkedAttendance(req,
  * Description:
  * Displays leave application form for the manager to apply for leave
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -362,7 +361,7 @@ router.get('/apply-for-leave', function applyForLeave(req, res, next) {
  * Description:
  * Manager gets the list of all his/her applied leaves.
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -562,7 +561,7 @@ router.get('/generate-pay-slip/:employee_id', function generatePaySlip(req, res,
  * Reads the parameters from the body of the post request.
  * Then saves the applied leave to the leave schema.
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -594,7 +593,7 @@ router.post('/apply-for-leave', function applyForLeave(req, res, next) {
  * Description:
  * Sets the bonus of the selected employee in UserSalary Schema
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th Novemebr, 2016
  *
@@ -623,7 +622,7 @@ router.post('/set-bonus', function setBonus(req, res) {
  * Description:
  * Sets the salary of the selected employee in UserSalary Schema
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -716,7 +715,7 @@ router.post('/provide-performance-appraisal', function providePerformanceApprais
  * Description:
  * Stores the Pay Slip of employee in PaySlip schema if  not already stored
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *
@@ -790,7 +789,7 @@ router.post('/view-attendance', function viewAttendance(req, res, next) {
  * Description:
  * Marks the attendance of the manager in current date
  *
- * Author: Salman Nizam
+ 
  *
  * Last Updated: 30th November, 2016
  *

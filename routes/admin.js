@@ -19,8 +19,6 @@ router.use('/', isLoggedIn, function isAuthenticated(req, res, next) {
  * Description:
  * Displays home page to the admin
  *
- * Author: Salman Nizam
- *
  * Last Updated: 29th November, 2016
  *
  * Known Bugs: None
@@ -37,8 +35,6 @@ router.get('/', function viewHome(req, res, next) {
  * Description:
  * First it gets attributes of the logged in admin from the User Schema.
  * Attributes are get with the help of id of logged in admin stored in session.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 27th November, 2016
  *
@@ -67,8 +63,6 @@ router.get('/view-profile', function viewProfile(req, res, next) {
  * Sorts the list of employees in User Schema.
  * Such that latest records are shown first.
  * Then displays list of all employees to the admin.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 30th November, 2016
  *
@@ -99,8 +93,6 @@ router.get('/view-all-employees', function viewAllEmployees(req, res, next) {
  * Description:
  * Displays add employee form to the admin.
  *
- * Author: Salman Nizam
- *
  * Last Updated: 29th November, 2016
  *
  * Known Bugs: None
@@ -126,8 +118,6 @@ router.get('/add-employee', function addEmployee(req, res, next) {
  * First it gets the id of the given employee from the parameters.
  * Finds the project of the employee from Project Schema with the help of that id.
  * Then displays all the projects of the given employee.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 30th November, 2016
  *
@@ -166,8 +156,6 @@ router.get('/all-employee-projects/:id', function getAllEmployeePojects(req, res
 /**
  * Description:
  * Displays the list of all the leave applications which are applied by all employees.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 29th November, 2016
  *
@@ -218,8 +206,6 @@ router.get('/leave-applications', function getLeaveApplications(req, res, next) 
  * Gets the leave id and employee id from the parameters.
  * Then shows the response application form of that leave of the employee to the admin.
  *
- * Author: Salman Nizam
- *
  * Last Updated: 30th November, 2016
  *
  * Known Bugs: None
@@ -258,8 +244,6 @@ router.get('/respond-application/:leave_id/:employee_id', function respondApplic
  * Description:
  * Displays profile of the employee with the help of the id of the employee from the parameters.
  *
- * Author: Salman Nizam
- *
  * Last Updated: 29th November, 2016
  *
  * Known Bugs: None
@@ -284,8 +268,6 @@ router.get('/employee-profile/:id', function getEmployeeProfile(req, res, next) 
 /**
  * Description:
  * Displays edit employee form to the admin.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 29th November, 2016
  *
@@ -316,8 +298,6 @@ router.get('/edit-employee/:id', function editEmployee(req, res, next) {
  * Gets id of the projet to be edit.
  * Displays the form of the edit project to th admin.
  *
- * Author: Salman Nizam
- *
  * Last Updated: 30th November, 2016
  *
  * Known Bugs: None
@@ -346,8 +326,6 @@ router.get('/edit-employee-project/:id', function editEmployeeProject(req, res, 
  * Description:
  * Gets the id of the employee from parameters.
  * Displays the add employee project form to the admin.
- *
- * Author: Salman Nizam
  *
  * Last Updated: 29th November, 2016
  *
@@ -380,7 +358,7 @@ router.get('/add-employee-project/:id', function addEmployeeProject(req, res, ne
  * Gets the Employee of the project.
  * Displays the project of the employee.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -415,7 +393,7 @@ router.get('/employee-project-info/:id', function viewEmployeeProjectInfo(req, r
  * Description:
  * Redirects admin to the employee profile page.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -437,7 +415,7 @@ router.get('/redirect-employee-profile', function viewEmployeeProfile(req, res, 
  * Description:
  * Displays the admin its own attendance sheet
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -476,7 +454,7 @@ router.post('/view-attendance', function viewAttendance(req, res, next) {
  * After marking attendance.
  * Shows current attendance to the admin.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -514,7 +492,7 @@ router.get('/view-attendance-current', function viewCurrentlyMarkedAttendance(re
  * Description:
  * Displays the attendance sheet of the given employee to the admin.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -556,7 +534,7 @@ router.get('/view-employee-attendance/:id', function viewEmployeeAttendance(req,
  * Adds employee to the User Schema by getting attributes from the body of the post request.
  * Then redirects admin to the profile information page of the added employee.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -573,7 +551,7 @@ router.post('/add-employee', passport.authenticate('local.add-employee', {
  * Gets the id of the leave from the body of the post request.
  * Sets the response field of that leave according to response given by employee from body of the post request.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -601,7 +579,7 @@ router.post('/respond-application', function respondApplication(req, res) {
  * Saves the update field to the project of the employee  in Project Schema.
  * Edits the project of the employee.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -683,7 +661,7 @@ router.post('/edit-employee/:id', function editEmployee(req, res) {
  * Gets the attributed of the the project from body of the post request.
  * Adds the the project of the employee in Project Schema.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 29th November, 2016
  *
@@ -717,7 +695,7 @@ router.post('/add-employee-project/:id', function addEmployeeProject(req, res) {
  * Saves the update field to the project of the employee  in Project Schema.
  * Edits the project of the employee.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -756,7 +734,7 @@ router.post('/edit-employee-project/:id', function editEmployeeProject(req, res)
  * Find the given employee from User Scheme.
  * Deleteth employee from User Schema.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 30th November, 2016
  *
@@ -783,7 +761,7 @@ router.post('/delete-employee/:id', function deleteEmployee(req, res) {
  * Gets current date.
  * Marks the attendance of that user in Attendance Schema.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 28th November, 2016
  *
@@ -828,7 +806,7 @@ module.exports = router;
  * Description:
  * Checks if user is logged in then redirects user to the his/her home page.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 28th November, 2016
  *
@@ -846,7 +824,7 @@ function isLoggedIn(req, res, next) {
  * Description:
  * Checks if user is not logged in then redirects user to the login page.
  *
- * Author: Salman Nizam
+
  *
  * Last Updated: 28th November, 2016
  *
