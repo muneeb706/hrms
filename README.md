@@ -2,7 +2,7 @@
 It is a web application which is a human resource management system. It keeps the information about the human resource, educational background of all employees, their  recent experiences, their attendance, their  leaves management and their current allocated projects. Administration panel will be created to manage all the information of hired employees. It will contain the statistics about the employee hiring ratio from different institutions and the average turnover of employees from different institutions. This project is built on Node Express which is is a web application framework for Node.js and the front end is created using HTML, Bootstrap, CSS and JS.  
 
 ## Product Features:
-The product shall consist of the basic modules, which are listed as follows
+The product consists of the basic modules, which are listed as follows
 1. Separate user accounts for all the admins and employees.
 1. Distinct views of data and distinct data access to the members, based on their privileges.
 1. Employee/Admin registration.
