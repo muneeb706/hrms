@@ -28,7 +28,7 @@ He/She will be able to generate pay slip for each employee, set bonus for employ
 1. Run mongoDB server by running the mongod application file in the installed mongoDB driectory.
 1. To start the application dependencies, open the terminal, go to the root folder of the application / repository and then type command **npm install**.
 1. To run application server, in the terminal, at the root folder of application,type command **npm start**.
-1. If you are running application for the first type then you need some dummy users entered into mongoDB for logging-in. For this purpose, you need to run user-seeder.js file in seed directory of application, in the in the terminal, go to the seed folder of application, type command **node user-seeder.js**.
+1. If you are running application for the first time then you need some dummy users entered into mongoDB for logging-in. For this purpose, you need to run user-seeder.js file in seed directory of application, in the in the terminal, go to the seed folder of application, type command **node user-seeder.js**.
 1. Dummy username/email address and passwords for each type of user can also be seen in user-seeder.js file. 
 1. Now to use the system, open any browser.
 1. In address bar write localhost:3000, where 3000 is the port this application uses.
