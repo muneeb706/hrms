@@ -5,8 +5,6 @@ var Attendance = require('../models/attendance');
 var Project = require('../models/project');
 var moment = require('moment');
 var User = require('../models/user');
-var csrf = require('csurf');
-var csrfProtection = csrf();
 var moment = require('moment');
 
 router.use('/', isLoggedIn, function checkAuthentication(req, res, next) {
