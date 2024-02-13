@@ -19,12 +19,12 @@ let User = require("../models/user");
 let bcrypt = require("bcrypt-nodejs");
 let mongoose = require("mongoose");
 
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/HRMS", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
+const db = require('../db');
+
+db.connect()
+  .then(() => console.log('Database connected'))
+  .catch((err) => console.error('Database connection error', err));
+
 
 let users = [
   new User({

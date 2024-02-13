@@ -6,38 +6,31 @@
  *
  */
 
-let express = require("express");
-let path = require("path");
-let logger = require("morgan");
-let cookieParser = require("cookie-parser");
-let bodyParser = require("body-parser");
-let mongoose = require("mongoose");
-let session = require("express-session");
-let passport = require("passport");
-let flash = require("connect-flash");
-let MongoStore = require("connect-mongo")(session);
-let favicon = require("serve-favicon");
+const express = require("express");
+const path = require("path");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const passport = require("passport");
+const flash = require("connect-flash");
+const MongoStore = require("connect-mongo")(session);
+const favicon = require("serve-favicon");
 
-let index = require("./routes/index");
-let users = require("./routes/users");
-let admin = require("./routes/admin");
-let employee = require("./routes/employee");
-let manager = require("./routes/manager");
+const index = require("./routes/index");
+const users = require("./routes/users");
+const admin = require("./routes/admin");
+const employee = require("./routes/employee");
+const manager = require("./routes/manager");
 
 expressValidator = require("express-validator");
-
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/HRMS", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
 
 // Import the Passport configuration.
 // This module configures Passport's strategies and sets up serialization and deserialization rules.
 require("./config/passport.js");
 
-let app = express();
+const app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -107,7 +100,7 @@ app.use(function (req, res, next) {
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  let err = new Error("Not Found");
+  const err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
