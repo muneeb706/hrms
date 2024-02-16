@@ -19,7 +19,6 @@ const MongoStore = require("connect-mongo")(session);
 const favicon = require("serve-favicon");
 
 const index = require("./routes/index");
-const users = require("./routes/users");
 const admin = require("./routes/admin");
 const employee = require("./routes/employee");
 const manager = require("./routes/manager");
@@ -84,9 +83,8 @@ app.use(passport.session());
 // Set up routing for the application.
 // The first argument to app.use() is the base path for the routes defined in the provided router.
 // The second argument is the router object.
-// For example, app.use("/users", users) means that the routes defined in the 'users' router will be used for any path that starts with '/users'.
+// For example, app.use("/admin", admin) means that the routes defined in the 'admin' router will be used for any path that starts with '/admin'.
 app.use("/", index);
-app.use("/users", users);
 app.use("/admin", admin);
 app.use("/manager", manager);
 app.use("/employee", employee);
