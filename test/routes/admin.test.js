@@ -26,7 +26,7 @@ describe("Admin Routes", () => {
     const $ = cheerio.load(res.text);
     const title = $("title").text();
 
-    expect(title).toBe("HRMS|All Employees");
+    expect(title.trim()).toBe("HRMS|All Employees");
 
     const employees = $("#example > tbody > tr");
     expect(employees).toHaveLength(4);
@@ -49,7 +49,7 @@ describe("Admin Routes", () => {
     const title = $("title").text();
     const _employeeName = $("#name").text();
 
-    expect(title).toBe("HRMS|Employee Profile");
+    expect(title.trim()).toBe("HRMS|Employee Profile");
     expect(_employeeName.trim()).toBe(employeeName);
   });
 });
