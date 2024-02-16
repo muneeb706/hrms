@@ -4,7 +4,8 @@ const request = require('supertest');
 const cheerio = require("cheerio");
 const execSync = require('child_process').execSync;
 
-global.agent = request.agent(app);
+global.admin_agent = request.agent(app);
+global.employee_agent = request.agent(app);
 global.csrfToken = null
 
 module.exports = async () => {
@@ -12,14 +13,21 @@ module.exports = async () => {
     execSync("NODE_ENV=test node seed/user-seeder.js");
   })
 
+  await loginAs(admin_agent, "admin@admin.com", "admin123")
+  await loginAs(employee_agent, "employee1@employee.com", "123456")
+
+};
+
+async function loginAs(agent, email, password) {
   const getRes = await agent.get("/");
   const $ = cheerio.load(getRes.text);
-  global.csrfToken = $('input[name="_csrf"]').val();
+  const csrfToken = $('input[name="_csrf"]').val();
 
   await agent.post("/login").send({
     _csrf: csrfToken,
-    email: "admin@admin.com",
-    password: "admin123",
+    email: email,
+    password: password,
   });
 
-};
+  return agent;
+}
