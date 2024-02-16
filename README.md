@@ -41,7 +41,7 @@ Accounts Manager is also an employee with the ability to generate pay slip, set 
 ### Pre-requisites
 1. Install [node.js](https://nodejs.org/en/download/) in your system.
 1. Install [mongoDB](https://www.mongodb.com/try/download/community) in your system. 
-1. Run mongoDB server, for GUI interface ([MongoDB Compass](https://www.mongodb.com/try/download/compass) can be used.
+1. Run mongoDB server, for GUI interface ([MongoDB Compass])(https://www.mongodb.com/try/download/compass) can be used.
 1. To download the application dependencies, open the terminal, go to the root folder of the application / repository and then type command **npm install**.
 
 ### Setup Data
