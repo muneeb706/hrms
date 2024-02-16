@@ -6,6 +6,7 @@ const execSync = require('child_process').execSync;
 
 global.admin_agent = request.agent(app);
 global.employee_agent = request.agent(app);
+global.pm_agent = request.agent(app);
 global.csrfToken = null
 
 module.exports = async () => {
@@ -15,6 +16,7 @@ module.exports = async () => {
 
   await loginAs(admin_agent, "admin@admin.com", "admin123")
   await loginAs(employee_agent, "employee1@employee.com", "123456")
+  await loginAs(pm_agent, "pm@pm.com", "pm1234")
 
 };
 

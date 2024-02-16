@@ -2,8 +2,8 @@ const { expect } = require("@jest/globals");
 const cheerio = require("cheerio");
 
 describe("Employee Routes", () => {
-  test("GET / should render employee home page", async () => {
-    const res = await employee_agent.get("/employee/");
+  test("GET / should render project manager home page", async () => {
+    const res = await pm_agent.get("/manager/");
 
     expect(res.statusCode).toBe(200);
 
@@ -14,6 +14,6 @@ describe("Employee Routes", () => {
 
     expect(anchor).toHaveLength(1);
     expect(icon).toHaveLength(1);
-    expect(text).toBe("Employee One");
+    expect(text).toBe("Project manager");
   });
 });
