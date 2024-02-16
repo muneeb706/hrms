@@ -18,7 +18,7 @@ router.get("/", function viewHome(req, res, next) {
   res.render("Admin/adminHome", {
     title: "Admin Home",
     csrfToken: req.csrfToken(),
-    userName: req.session.user.name,
+    userName: req.user.name,  
   });
 });
 
@@ -41,7 +41,7 @@ router.get("/view-all-employees", async (req, res, next) => {
       title: "All Employees",
       csrfToken: req.csrfToken(),
       users,
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -59,7 +59,7 @@ router.get("/employee-profile/:id", async (req, res, next) => {
       employee: user,
       csrfToken: req.csrfToken(),
       moment: moment,
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -83,7 +83,7 @@ router.get("/view-employee-attendance/:id", async (req, res, next) => {
       found: attendances.length > 0 ? 1 : 0,
       attendance: attendances,
       moment: moment,
-      userName: req.session.user.name,
+      userName: req.user.name,
       employee_name: user.name,
     });
   } catch (err) {
@@ -103,7 +103,7 @@ router.get("/edit-employee/:id", async (req, res, next) => {
       employee: user,
       moment: moment,
       message: "",
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -113,7 +113,7 @@ router.get("/edit-employee/:id", async (req, res, next) => {
 
 // First it gets attributes of the logged in admin from the User Schema.
 router.get("/view-profile", async (req, res, next) => {
-  const { _id, name } = req.session.user;
+  const { _id, name } = req.user;
   try {
     const user = await User.findById(_id);
     res.render("Admin/viewProfile", {
@@ -131,7 +131,7 @@ router.get("/view-profile", async (req, res, next) => {
 
 // Displays add employee form to the admin.
 router.get("/add-employee", (req, res, next) => {
-  const { name } = req.session.user;
+  const { name } = req.user;
   const messages = req.flash("error");
 
   res.render("Admin/addEmployee", {
@@ -161,7 +161,7 @@ router.get("/all-employee-projects/:id", async (req, res, next) => {
       projects,
       csrfToken: req.csrfToken(),
       user,
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -186,7 +186,7 @@ router.get("/leave-applications", async (req, res, next) => {
       leaves,
       employees: employeeChunks,
       moment: moment,
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -212,7 +212,7 @@ router.get(
         leave,
         employee: user,
         moment: moment,
-        userName: req.session.user.name,
+        userName: req.user.name,
       });
     } catch (err) {
       console.error(err);
@@ -235,7 +235,7 @@ router.get("/edit-employee-project/:id", async (req, res, next) => {
       project,
       moment: moment,
       message: "",
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     console.error(err);
@@ -257,7 +257,7 @@ router.get("/add-employee-project/:id", async (req, res, next) => {
       employee: user,
       moment: moment,
       message: "",
-      userName: req.session.user.name,
+      userName: req.user.name,
     });
   } catch (err) {
     res.redirect("/admin/");
@@ -275,7 +275,7 @@ router.get("/employee-project-info/:id", async (req, res, next) => {
       employee: user,
       moment: moment,
       message: "",
-      userName: req.session.user.name,
+      userName: req.user.name,
       csrfToken: req.csrfToken(),
     });
   } catch (err) {
@@ -296,7 +296,7 @@ router.get("/redirect-employee-profile", async (req, res, next) => {
 // Displays the admin its own attendance sheet
 router.post("/view-attendance", async (req, res, next) => {
   const { month, year } = req.body;
-  const { _id, name } = req.session.user;
+  const { _id, name } = req.user;
   try {
     const attendance = await Attendance.find({
       employeeID: _id,
@@ -324,7 +324,7 @@ router.post("/view-attendance", async (req, res, next) => {
  * Shows current attendance to the admin.
  */
 router.get("/view-attendance-current", async (req, res, next) => {
-  const { _id, name } = req.session.user;
+  const { _id, name } = req.user;
   const month = new Date().getMonth() + 1;
   const year = new Date().getFullYear();
   try {
@@ -408,7 +408,7 @@ router.post("/edit-employee/:id", async (req, res) => {
           employee: newUser,
           moment: moment,
           message: "Email is already in use",
-          userName: req.session.user.name,
+          userName: req.user.name,
         });
       }
     }
@@ -473,7 +473,7 @@ router.post("/delete-employee/:id", async (req, res) => {
 });
 
 router.post("/mark-attendance", async (req, res) => {
-  const { _id } = req.session.user;
+  const { _id } = req.user;
   const currentDate = new Date();
   const date = currentDate.getDate();
   const month = currentDate.getMonth() + 1;
