@@ -41,7 +41,7 @@ let users = [
     password: bcrypt.hashSync("am1234", bcrypt.genSaltSync(5), null),
     name: "Accounts Manager",
     dateOfBirth: new Date("1990-08-26"),
-    contactNumber: "0300-1234567",
+    contactNumber: "0300-5432011",
   }),
   new User({
     type: "employee",
@@ -49,7 +49,7 @@ let users = [
     password: bcrypt.hashSync("123456", bcrypt.genSaltSync(5), null),
     name: "Employee One",
     dateOfBirth: new Date("1994-06-26"),
-    contactNumber: "0322-1234567",
+    contactNumber: "0322-5432011",
   }),
   new User({
     type: "employee",
@@ -57,7 +57,7 @@ let users = [
     password: bcrypt.hashSync("123456", bcrypt.genSaltSync(5), null),
     name: "Employee Two",
     dateOfBirth: new Date("1996-05-26"),
-    contactNumber: "0311-1234567",
+    contactNumber: "0311-5432011",
   }),
   new User({
     type: "admin",
@@ -65,7 +65,7 @@ let users = [
     password: bcrypt.hashSync("admin123", bcrypt.genSaltSync(5), null),
     name: "Admin Admin",
     dateOfBirth: new Date("1980-05-26"),
-    contactNumber: "0332-1234567",
+    contactNumber: "0333-5432011",
   }),
 ];
 
