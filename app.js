@@ -1,82 +1,117 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mongoose=require('mongoose');
-var session= require('express-session');
-var passport= require('passport');
-var flash= require('connect-flash');
-var MongoStore= require('connect-mongo')(session);
+/**
+ * This script sets up the Express application. It imports necessary modules, sets up middleware,
+ * connects to the database, and imports routes.
+ *
+ * The Express application is then exported and can be used by other scripts (like www).
+ *
+ */
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var admin = require('./routes/admin');
-var employee = require('./routes/employee');
-var manager = require('./routes/manager');
+const express = require("express");
+const path = require("path");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const passport = require("passport");
+const flash = require("connect-flash");
+const MongoStore = require("connect-mongo")(session);
+const favicon = require("serve-favicon");
 
-expressValidator = require('express-validator');
+const index = require("./routes/index");
+const admin = require("./routes/admin");
+const employee = require("./routes/employee");
+const manager = require("./routes/manager");
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/HRMS');
+expressValidator = require("express-validator");
 
-require('./config/passport.js');
-var app = express();
+// Import the Passport configuration.
+// This module configures Passport's strategies and sets up serialization and deserialization rules.
+require("./config/passport.js");
 
+const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
+
+// Use the morgan middleware for logging HTTP requests.
+// 'dev' format is used, which means the log will include method, url, status, response time and content length.
+app.use(logger("dev"));
+
+//json() function parses incoming requests with JSON payloads.
 app.use(bodyParser.json());
+// urlencoded() function parses incoming requests with URL-encoded payloads.
 app.use(bodyParser.urlencoded({ extended: false }));
-//validator should be ater body parser
+// express-validator middleware validates and sanitize request data.
+//validator should be after body parser
 app.use(expressValidator());
+// parses Cookie header and populate req.cookies with an object keyed by the cookie names.
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: 'mysupersecret', resave: false, saveUninitialized: false, store: new MongoStore({
-    mongooseConnection: mongoose.connection
-  }),
-  cookie:{maxAge: 180*60*1000},
-}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// Use the express-session middleware to handle session state.
+// The 'secret' is used to sign the session ID cookie.
+// 'resave: false' means the session store will not be resaved into the session store if it hasn't changed.
+// 'saveUninitialized: false' means the session will not be stored in the session store if it's new and not modified.
+// 'store' is used to configure the session store. Here, a new instance of MongoStore is created to store session state in MongoDB.
+// 'mongooseConnection: mongoose.connection' tells MongoStore to use the existing Mongoose connection.
+// 'cookie: { maxAge: 180 * 60 * 1000 }' sets the maximum age of the session cookie to 180 minutes.
+app.use(
+  session({
+    secret: "mysupersecret",
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+    }),
+    cookie: { maxAge: 180 * 60 * 1000 },
+  })
+);
+
+// connect-flash middleware provides flash messages, which are stored in the session until they are displayed and deleted.
+// Flash messages are often used to show one-time notifications to the user.
 app.use(flash());
+// This is required to set up Passport's persistent login sessions.
+// It must be used before any routes that need to authenticate users.
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', index);
-app.use('/users', users);
-app.use('/admin', admin);
-app.use('/manager', manager);
-app.use('/employee', employee);
+// Set up routing for the application.
+// The first argument to app.use() is the base path for the routes defined in the provided router.
+// The second argument is the router object.
+// For example, app.use("/admin", admin) means that the routes defined in the 'admin' router will be used for any path that starts with '/admin'.
+app.use("/", index);
+app.use("/admin", admin);
+app.use("/manager", manager);
+app.use("/employee", employee);
 
-
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.login = req.isAuthenticated();
   res.locals.session = req.session;
-  res.locals.messages=req.flash();
+  res.locals.messages = req.flash();
   next();
 });
+
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+app.use(function (req, res, next) {
+  const err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error");
 });
 
 module.exports = app;

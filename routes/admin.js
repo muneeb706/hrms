@@ -1,838 +1,507 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var User = require('../models/user');
-var Project = require('../models/project');
-var csrf = require('csurf');
-var csrfProtection = csrf();
-var config_passport = require('../config/passport.js');
-var moment = require('moment');
-var Leave = require('../models/leave');
-var Attendance = require('../models/attendance');
+const express = require("express");
+const router = express.Router();
+const passport = require("passport");
+const User = require("../models/user");
+const Project = require("../models/project");
+const config_passport = require("../config/passport.js");
+const moment = require("moment");
+const Leave = require("../models/leave");
+const Attendance = require("../models/attendance");
+const { isLoggedIn } = require("./middleware");
 
+router.use("/", isLoggedIn, function isAuthenticated(req, res, next) {
+  next();
+});
 
-router.use('/', isLoggedIn, function isAuthenticated(req, res, next) {
-    next();
+// Displays home page to the admin
+router.get("/", function viewHome(req, res, next) {
+  res.render("Admin/adminHome", {
+    title: "Admin Home",
+    csrfToken: req.csrfToken(),
+    userName: req.user.name,
+  });
 });
 
 /**
- * Description:
- * Displays home page to the admin
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/', function viewHome(req, res, next) {
-    res.render('Admin/adminHome', {
-        title: 'Admin Home',
-        csrfToken: req.csrfToken(),
-        userName: req.session.user.name
-    });
-});
-
-/**
- * Description:
- * First it gets attributes of the logged in admin from the User Schema.
- * Attributes are get with the help of id of logged in admin stored in session.
- *
- * Last Updated: 27th November, 2016
- *
- * Known Bugs: None
- */
-
-router.get('/view-profile', function viewProfile(req, res, next) {
-
-    User.findById(req.session.user._id, function getUser(err, user) {
-        if (err) {
-            console.log(err);
-        }
-        res.render('Admin/viewProfile', {
-            title: 'Profile',
-            csrfToken: req.csrfToken(),
-            employee: user,
-            moment: moment,
-            userName: req.session.user.name
-        });
-    });
-
-});
-
-/**
- * Description:
  * Sorts the list of employees in User Schema.
  * Such that latest records are shown first.
  * Then displays list of all employees to the admin.
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
  */
+router.get("/view-all-employees", async (req, res, next) => {
+  try {
+    const users = await User.find({
+      $or: [
+        { type: "employee" },
+        { type: "project_manager" },
+        { type: "accounts_manager" },
+      ],
+    }).sort({ _id: -1 });
 
-router.get('/view-all-employees', function viewAllEmployees(req, res, next) {
-
-    var userChunks = [];
-    var chunkSize = 3;
-    //find is asynchronous function
-    User.find({$or: [{type: 'employee'}, {type: 'project_manager'}, {type: 'accounts_manager'}]}).sort({_id: -1}).exec(function getUsers(err, docs) {
-        for (var i = 0; i < docs.length; i++) {
-            userChunks.push(docs[i]);
-        }
-        res.render('Admin/viewAllEmployee', {
-            title: 'All Employees',
-            csrfToken: req.csrfToken(),
-            users: userChunks,
-            userName: req.session.user.name
-        });
+    res.render("Admin/viewAllEmployee", {
+      title: "All Employees",
+      csrfToken: req.csrfToken(),
+      users,
+      userName: req.user.name,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving employees");
+  }
+});
 
+// Displays profile of the employee with the help of the id of the employee from the parameters.
+router.get("/employee-profile/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    res.render("Admin/employeeProfile", {
+      title: "Employee Profile",
+      employee: user,
+      csrfToken: req.csrfToken(),
+      moment: moment,
+      userName: req.user.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving employee profile");
+  }
+});
 
+// Displays the attendance sheet of the given employee to the admin.
+router.get("/view-employee-attendance/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const attendances = await Attendance.find({ employeeID: id }).sort({
+      _id: -1,
+    });
+    const user = await User.findById(id);
+
+    res.render("Admin/employeeAttendanceSheet", {
+      title: "Employee Attendance Sheet",
+      month: req.body.month,
+      csrfToken: req.csrfToken(),
+      found: attendances.length > 0 ? 1 : 0,
+      attendance: attendances,
+      moment: moment,
+      userName: req.user.name,
+      employee_name: user.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving employee attendance");
+  }
+});
+
+// Displays edit employee form to the admin.
+router.get("/edit-employee/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    res.render("Admin/editEmployee", {
+      title: "Edit Employee",
+      csrfToken: req.csrfToken(),
+      employee: user,
+      moment: moment,
+      message: "",
+      userName: req.user.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/");
+  }
+});
+
+// First it gets attributes of the logged in admin from the User Schema.
+router.get("/view-profile", async (req, res, next) => {
+  const { _id, name } = req.user;
+  try {
+    const user = await User.findById(_id);
+    res.render("Admin/viewProfile", {
+      title: "Profile",
+      csrfToken: req.csrfToken(),
+      employee: user,
+      moment: moment,
+      userName: name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving profile");
+  }
+});
+
+// Displays add employee form to the admin.
+router.get("/add-employee", (req, res, next) => {
+  const { name } = req.user;
+  const messages = req.flash("error");
+
+  res.render("Admin/addEmployee", {
+    title: "Add Employee",
+    csrfToken: req.csrfToken(),
+    user: config_passport.User,
+    messages,
+    hasErrors: messages.length > 0,
+    userName: name,
+  });
 });
 
 /**
- * Description:
- * Displays add employee form to the admin.
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-
-router.get('/add-employee', function addEmployee(req, res, next) {
-    var messages = req.flash('error');
-    var newUser = new User();
-
-    res.render('Admin/addEmployee', {
-        title: 'Add Employee',
-        csrfToken: req.csrfToken(),
-        user: config_passport.User,
-        messages: messages,
-        hasErrors: messages.length > 0,
-        userName: req.session.user.name
-    });
-
-});
-
-/**
- * Description:
  * First it gets the id of the given employee from the parameters.
  * Finds the project of the employee from Project Schema with the help of that id.
  * Then displays all the projects of the given employee.
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
  */
-router.get('/all-employee-projects/:id', function getAllEmployeePojects(req, res, next) {
-    var employeeId = req.params.id;
-    var projectChunks = [];
+router.get("/all-employee-projects/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const projects = await Project.find({ employeeID: id }).sort({ _id: -1 });
+    const user = await User.findById(id);
 
-    //find is asynchronous function
-    Project.find({employeeID: employeeId}).sort({_id: -1}).exec(function findProjectOfEmployee(err, docs) {
-        var hasProject = 0;
-        if (docs.length > 0) {
-            hasProject = 1;
-        }
-        for (var i = 0; i < docs.length; i++) {
-            projectChunks.push(docs[i]);
-        }
-        User.findById(employeeId, function getUser(err, user) {
-            if (err) {
-                console.log(err);
-            }
-            res.render('Admin/employeeAllProjects', {
-                title: 'List Of Employee Projects',
-                hasProject: hasProject,
-                projects: projectChunks,
-                csrfToken: req.csrfToken(),
-                user: user,
-                userName: req.session.user.name
-            });
-        });
-
+    res.render("Admin/employeeAllProjects", {
+      title: "List Of Employee Projects",
+      hasProject: projects.length > 0 ? 1 : 0,
+      projects,
+      csrfToken: req.csrfToken(),
+      user,
+      userName: req.user.name,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving employee projects");
+  }
+});
+
+// Displays the list of all the leave applications applied by all employees.
+router.get("/leave-applications", async (req, res, next) => {
+  try {
+    const leaves = await Leave.find({}).sort({ _id: -1 });
+    const hasLeave = leaves.length > 0 ? 1 : 0;
+
+    const employeeChunks = await Promise.all(
+      leaves.map((leave) => User.findById(leave.applicantID))
+    );
+
+    res.render("Admin/allApplications", {
+      title: "List Of Leave Applications",
+      csrfToken: req.csrfToken(),
+      hasLeave,
+      leaves,
+      employees: employeeChunks,
+      moment: moment,
+      userName: req.user.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving leave applications");
+  }
 });
 
 /**
- * Description:
- * Displays the list of all the leave applications which are applied by all employees.
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/leave-applications', function getLeaveApplications(req, res, next) {
-
-    var leaveChunks = [];
-    var employeeChunks = [];
-    var temp;
-    //find is asynchronous function
-    Leave.find({}).sort({_id: -1}).exec(function findAllLeaves(err, docs) {
-        var hasLeave = 0;
-        if (docs.length > 0) {
-            hasLeave = 1;
-        }
-        for (var i = 0; i < docs.length; i++) {
-            leaveChunks.push(docs[i])
-        }
-        for (var i = 0; i < leaveChunks.length; i++) {
-
-            User.findById(leaveChunks[i].applicantID, function getUser(err, user) {
-                if (err) {
-                    console.log(err);
-                }
-                employeeChunks.push(user);
-
-            })
-        }
-
-        // call the rest of the code and have it execute after 3 seconds
-        setTimeout(render_view, 900);
-        function render_view() {
-            res.render('Admin/allApplications', {
-                title: 'List Of Leave Applications',
-                csrfToken: req.csrfToken(),
-                hasLeave: hasLeave,
-                leaves: leaveChunks,
-                employees: employeeChunks, moment: moment, userName: req.session.user.name
-            });
-        }
-    });
-
-});
-
-/**
- * Description:
  * Gets the leave id and employee id from the parameters.
  * Then shows the response application form of that leave of the employee to the admin.
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
  */
-router.get('/respond-application/:leave_id/:employee_id', function respondApplication(req, res, next) {
-    var leaveID = req.params.leave_id;
-    var employeeID = req.params.employee_id;
-    Leave.findById(leaveID, function getLeave(err, leave) {
+router.get(
+  "/respond-application/:leave_id/:employee_id",
+  async (req, res, next) => {
+    const { leave_id: leaveID, employee_id: employeeID } = req.params;
+    try {
+      const leave = await Leave.findById(leaveID);
+      const user = await User.findById(employeeID);
 
-        if (err) {
-            console.log(err);
-        }
-        User.findById(employeeID, function getUser(err, user) {
-            if (err) {
-                console.log(err);
-            }
-            res.render('Admin/applicationResponse', {
-                title: 'Respond Leave Application',
-                csrfToken: req.csrfToken(),
-                leave: leave,
-                employee: user,
-                moment: moment, userName: req.session.user.name
-            });
-
-
-        })
-
-
-    });
-
-
-});
-
+      res.render("Admin/applicationResponse", {
+        title: "Respond Leave Application",
+        csrfToken: req.csrfToken(),
+        leave,
+        employee: user,
+        moment: moment,
+        userName: req.user.name,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error responding to application");
+    }
+  }
+);
 
 /**
- * Description:
- * Displays profile of the employee with the help of the id of the employee from the parameters.
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/employee-profile/:id', function getEmployeeProfile(req, res, next) {
-    var employeeId = req.params.id;
-    User.findById(employeeId, function getUser(err, user) {
-        if (err) {
-            console.log(err);
-        }
-        res.render('Admin/employeeProfile', {
-            title: 'Employee Profile',
-            employee: user,
-            csrfToken: req.csrfToken(),
-            moment: moment,
-            userName: req.session.user.name
-        });
-
-    });
-});
-
-/**
- * Description:
- * Displays edit employee form to the admin.
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/edit-employee/:id', function editEmployee(req, res, next) {
-    var employeeId = req.params.id;
-    User.findById(employeeId, function getUser(err, user) {
-        if (err) {
-            res.redirect('/admin/');
-        }
-        res.render('Admin/editEmployee', {
-            title: 'Edit Employee',
-            csrfToken: req.csrfToken(),
-            employee: user,
-            moment: moment,
-            message: '',
-            userName: req.session.user.name
-        });
-
-
-    });
-
-});
-
-/**
- * Description:
  * Gets id of the projet to be edit.
  * Displays the form of the edit project to th admin.
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
  */
-router.get('/edit-employee-project/:id', function editEmployeeProject(req, res, next) {
-    var projectId = req.params.id;
-    Project.findById(projectId, function getProject(err, project) {
-        if (err) {
-            console.log(err);
-        }
-        res.render('Admin/editProject', {
-            title: 'Edit Employee',
-            csrfToken: req.csrfToken(),
-            project: project,
-            moment: moment,
-            message: '',
-            userName: req.session.user.name
-        });
-
-
+router.get("/edit-employee-project/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const project = await Project.findById(id);
+    res.render("Admin/editProject", {
+      title: "Edit Employee",
+      csrfToken: req.csrfToken(),
+      project,
+      moment: moment,
+      message: "",
+      userName: req.user.name,
     });
-
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving project");
+  }
 });
 
 /**
- * Description:
  * Gets the id of the employee from parameters.
  * Displays the add employee project form to the admin.
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
  */
-router.get('/add-employee-project/:id', function addEmployeeProject(req, res, next) {
-
-    var employeeId = req.params.id;
-    User.findById(employeeId, function getUser(err, user) {
-        if (err) {
-            res.redirect('/admin/');
-        }
-        res.render('Admin/addProject', {
-            title: 'Add Employee Project',
-            csrfToken: req.csrfToken(),
-            employee: user,
-            moment: moment,
-            message: '',
-            userName: req.session.user.name
-        });
-
+router.get("/add-employee-project/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    res.render("Admin/addProject", {
+      title: "Add Employee Project",
+      csrfToken: req.csrfToken(),
+      employee: user,
+      moment: moment,
+      message: "",
+      userName: req.user.name,
     });
-
+  } catch (err) {
+    res.redirect("/admin/");
+  }
 });
 
-
-/**
- * Description:
- * First finds project in the Project Schema with the help of id from the parameters.
- * Gets the Employee of the project.
- * Displays the project of the employee.
- *
-
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/employee-project-info/:id', function viewEmployeeProjectInfo(req, res, next) {
-    var projectId = req.params.id;
-    Project.findById(projectId, function getProject(err, project) {
-        if (err) {
-            console.log(err);
-        }
-        User.findById(project.employeeID, function getUser(err, user) {
-            if (err) {
-                console.log(err);
-            }
-            res.render('Admin/projectInfo', {
-                title: 'Employee Project Information',
-                project: project,
-                employee: user,
-                moment: moment,
-                message: '',
-                userName: req.session.user.name,
-                csrfToken: req.csrfToken()
-            });
-        })
-
+router.get("/employee-project-info/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const project = await Project.findById(id);
+    const user = await User.findById(project.employeeID);
+    res.render("Admin/projectInfo", {
+      title: "Employee Project Information",
+      project: project,
+      employee: user,
+      moment: moment,
+      message: "",
+      userName: req.user.name,
+      csrfToken: req.csrfToken(),
     });
-
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-/**
- * Description:
- * Redirects admin to the employee profile page.
- *
+router.get("/redirect-employee-profile", async (req, res, next) => {
+  const { id } = req.user;
+  try {
+    const user = await User.findById(id);
+    res.redirect(`/admin/employee-profile/${id}`);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/redirect-employee-profile', function viewEmployeeProfile(req, res, next) {
-    var employeeId = req.user.id;
-    User.findById(employeeId, function getUser(err, user) {
-        if (err) {
-            console.log(err);
-        }
-        res.redirect('/admin/employee-profile/' + employeeId);
-
+// Displays the admin its own attendance sheet
+router.post("/view-attendance", async (req, res, next) => {
+  const { month, year } = req.body;
+  const { _id, name } = req.user;
+  try {
+    const attendance = await Attendance.find({
+      employeeID: _id,
+      month,
+      year,
+    }).sort({ _id: -1 });
+    const found = attendance.length > 0 ? 1 : 0;
+    res.render("Admin/viewAttendanceSheet", {
+      title: "Attendance Sheet",
+      month,
+      csrfToken: req.csrfToken(),
+      found,
+      attendance,
+      userName: name,
+      moment: moment,
     });
-
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error viewing attendance");
+  }
 });
 
 /**
- * Description:
- * Displays the admin its own attendance sheet
- *
-
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-router.post('/view-attendance', function viewAttendance(req, res, next) {
-    var attendanceChunks = [];
-    Attendance.find({
-        employeeID: req.session.user._id,
-        month: req.body.month,
-        year: req.body.year
-    }).sort({_id: -1}).exec(function viewAttendanceSheet(err, docs) {
-        var found = 0;
-        if (docs.length > 0) {
-            found = 1;
-        }
-        for (var i = 0; i < docs.length; i++) {
-            attendanceChunks.push(docs[i]);
-        }
-        res.render('Admin/viewAttendanceSheet', {
-            title: 'Attendance Sheet',
-            month: req.body.month,
-            csrfToken: req.csrfToken(),
-            found: found,
-            attendance: attendanceChunks,
-            userName: req.session.user.name,
-            moment: moment
-        });
-    });
-
-
-});
-
-/**
- * Description:
  * After marking attendance.
  * Shows current attendance to the admin.
- *
-
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
  */
-router.get('/view-attendance-current', function viewCurrentlyMarkedAttendance(req, res, next) {
-    var attendanceChunks = [];
-
-    Attendance.find({
-        employeeID: req.session.user._id,
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear()
-    }).sort({_id: -1}).exec(function getAttendanceSheet(err, docs) {
-        var found = 0;
-        if (docs.length > 0) {
-            found = 1;
-        }
-        for (var i = 0; i < docs.length; i++) {
-            attendanceChunks.push(docs[i]);
-        }
-        res.render('Admin/viewAttendanceSheet', {
-            title: 'Attendance Sheet',
-            month: new Date().getMonth() + 1,
-            csrfToken: req.csrfToken(),
-            found: found,
-            attendance: attendanceChunks,
-            moment: moment,
-            userName: req.session.user.name
-        });
+router.get("/view-attendance-current", async (req, res, next) => {
+  const { _id, name } = req.user;
+  const month = new Date().getMonth() + 1;
+  const year = new Date().getFullYear();
+  try {
+    const attendance = await Attendance.find({
+      employeeID: _id,
+      month,
+      year,
+    }).sort({ _id: -1 });
+    const found = attendance.length > 0 ? 1 : 0;
+    res.render("Admin/viewAttendanceSheet", {
+      title: "Attendance Sheet",
+      month,
+      csrfToken: req.csrfToken(),
+      found,
+      attendance,
+      moment: moment,
+      userName: name,
     });
-
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error viewing current attendance");
+  }
 });
 
-/**
- * Description:
- * Displays the attendance sheet of the given employee to the admin.
- *
-
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.get('/view-employee-attendance/:id', function viewEmployeeAttendance(req, res, next) {
-    var attendanceChunks = [];
-    Attendance.find({employeeID: req.params.id}).sort({_id: -1}).exec(function getAttendanceSheet(err, docs) {
-        var found = 0;
-        if (docs.length > 0) {
-            found = 1;
-        }
-        for (var i = 0; i < docs.length; i++) {
-            attendanceChunks.push(docs[i]);
-        }
-
-        User.findById(req.params.id, function getUser(err, user) {
-
-            res.render('Admin/employeeAttendanceSheet', {
-                title: 'Employee Attendance Sheet',
-                month: req.body.month,
-                csrfToken: req.csrfToken(),
-                found: found,
-                attendance: attendanceChunks,
-                moment: moment,
-                userName: req.session.user.name
-                ,
-                'employee_name': user.name
-
-            })
-        });
-    });
-
-
-});
-
-/**
- * Description:
- * Adds employee to the User Schema by getting attributes from the body of the post request.
- * Then redirects admin to the profile information page of the added employee.
- *
-
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-router.post('/add-employee', passport.authenticate('local.add-employee', {
-    successRedirect: '/admin/redirect-employee-profile',
-    failureRedirect: '/admin/add-employee',
+// Adds employee to the User Schema by getting attributes from the body of the post request.
+// Then redirects admin to the profile information page of the added employee.
+router.post(
+  "/add-employee",
+  passport.authenticate("local.add-employee", {
+    successRedirect: "/admin/redirect-employee-profile",
+    failureRedirect: "/admin/add-employee",
     failureFlash: true,
-}));
+  })
+);
 
-/**
- * Description:
- * Gets the id of the leave from the body of the post request.
- * Sets the response field of that leave according to response given by employee from body of the post request.
- *
-
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.post('/respond-application', function respondApplication(req, res) {
-
-    Leave.findById(req.body.leave_id, function getLeave(err, leave) {
-        leave.adminResponse = req.body.status;
-        leave.save(function saveLeave(err) {
-            if (err) {
-                console.log(err);
-            }
-            res.redirect('/admin/leave-applications');
-        })
-    })
-
-
+// Gets the id of the leave from the body of the post request.
+// Sets the response field of that leave according to response given by employee from body of the post request.
+router.post("/respond-application", async (req, res) => {
+  try {
+    const leave = await Leave.findById(req.body.leave_id);
+    leave.adminResponse = req.body.status;
+    await leave.save();
+    res.redirect("/admin/leave-applications");
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-/**
- * Description:
- * Gets the id of the employee from the parameters.
- * Gets the edited fields of the project from body of the post request.
- * Saves the update field to the project of the employee  in Project Schema.
- * Edits the project of the employee.
- *
+// Gets the id of the employee from the parameters.
+// Gets the edited fields of the project from body of the post request.
+// Saves the update field to the project of the employee  in Project Schema.
+// Edits the project of the employee.
+router.post("/edit-employee/:id", async (req, res) => {
+  const { id } = req.params;
+  const { email, designation, name, DOB, number, department, skills } =
+    req.body;
+  const newUser = {
+    email,
+    type:
+      designation === "Accounts Manager"
+        ? "accounts_manager"
+        : designation === "Project Manager"
+        ? "project_manager"
+        : "employee",
+    name,
+    dateOfBirth: new Date(DOB),
+    contactNumber: number,
+    department,
+    Skills: skills,
+    designation,
+  };
 
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-
-router.post('/edit-employee/:id', function editEmployee(req, res) {
-    var employeeId = req.params.id;
-    var newUser = new User();
-    newUser.email = req.body.email;
-    if (req.body.designation == "Accounts Manager") {
-        newUser.type = "accounts_manager";
-    }
-    else if (req.body.designation == "Project Manager") {
-        newUser.type = "project_manager";
-    }
-    else {
-        newUser.type = "employee";
-    }
-    newUser.name = req.body.name,
-        newUser.dateOfBirth = new Date(req.body.DOB),
-        newUser.contactNumber = req.body.number,
-        newUser.department = req.body.department;
-    newUser.Skills = req.body['skills[]'];
-    newUser.designation = req.body.designation;
-
-    User.findById(employeeId, function getUser(err, user) {
-        if (err) {
-            res.redirect('/admin/');
-        }
-        if (user.email != req.body.email) {
-            User.findOne({'email': req.body.email}, function getUser(err, user) {
-                if (err) {
-                    res.redirect('/admin/');
-                }
-                if (user) {
-                    res.render('Admin/editEmployee', {
-                        title: 'Edit Employee',
-                        csrfToken: req.csrfToken(),
-                        employee: newUser,
-                        moment: moment,
-                        message: 'Email is already in use', userName: req.session.user.name
-                    });
-
-                }
-            });
-        }
-        user.email = req.body.email;
-        if (req.body.designation == "Accounts Manager") {
-            user.type = "accounts_manager";
-        }
-        else if (req.body.designation == "Project Manager") {
-            user.type = "project_manager";
-        }
-        else {
-            user.type = "employee";
-        }
-        user.name = req.body.name,
-            user.dateOfBirth = new Date(req.body.DOB),
-            user.contactNumber = req.body.number,
-            user.department = req.body.department;
-        user.Skills = req.body['skills[]'];
-        user.designation = req.body.designation;
-
-        user.save(function saveUser(err) {
-            if (err) {
-                console.log(error);
-            }
-            res.redirect('/admin/employee-profile/' + employeeId);
-
+  try {
+    const user = await User.findById(id);
+    if (user.email !== email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.render("Admin/editEmployee", {
+          title: "Edit Employee",
+          csrfToken: req.csrfToken(),
+          employee: newUser,
+          moment: moment,
+          message: "Email is already in use",
+          userName: req.user.name,
         });
-    });
-
+      }
+    }
+    Object.assign(user, newUser);
+    await user.save();
+    res.redirect(`/admin/employee-profile/${id}`);
+  } catch (err) {
+    console.log(err);
+    res.redirect("/admin/");
+  }
 });
 
-/**
- * Description:
- * Gets the id of the employee from the parameters.
- * Gets the attributed of the the project from body of the post request.
- * Adds the the project of the employee in Project Schema.
- *
+router.post("/add-employee-project/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, type, start_date, end_date, description, status } = req.body;
+  const newProject = new Project({
+    employeeID: id,
+    title,
+    type,
+    startDate: new Date(start_date),
+    endDate: new Date(end_date),
+    description,
+    status,
+  });
 
- *
- * Last Updated: 29th November, 2016
- *
- * Known Bugs: None
- */
-router.post('/add-employee-project/:id', function addEmployeeProject(req, res) {
-    var newProject = new Project();
-    newProject.employeeID = req.params.id;
-    newProject.title = req.body.title;
-    newProject.type = req.body.type;
-    newProject.startDate = new Date(req.body.start_date),
-        newProject.endDate = new Date(req.body.end_date),
-        newProject.description = req.body.description,
-        newProject.status = req.body.status;
-
-    newProject.save(function saveProject(err) {
-        if (err) {
-            console.log(err);
-        }
-        res.redirect('/admin/employee-project-info/' + newProject._id);
-
-
-    });
-
+  try {
+    await newProject.save();
+    res.redirect(`/admin/employee-project-info/${newProject._id}`);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-/**
- * Description:
- * Gets the id of the employee from the parameters.
- * Gets the edited fields of the project from body of the post request.
- * Saves the update field to the project of the employee  in Project Schema.
- * Edits the project of the employee.
- *
+router.post("/edit-employee-project/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, type, start_date, end_date, description, status } = req.body;
 
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-
-router.post('/edit-employee-project/:id', function editEmployeeProject(req, res) {
-    var projectId = req.params.id;
-    var newProject = new Project();
-
-    Project.findById(projectId, function (err, project) {
-        if (err) {
-            console.log(err);
-        }
-        project.title = req.body.title;
-        project.type = req.body.type;
-        project.startDate = new Date(req.body.start_date),
-            project.endDate = new Date(req.body.end_date),
-            project.description = req.body.description,
-            project.status = req.body.status;
-
-        project.save(function saveProject(err) {
-            if (err) {
-                console.log(err);
-            }
-            res.redirect('/admin/employee-project-info/' + projectId);
-
-        });
-    });
-
+  try {
+    const project = await Project.findById(id);
+    project.title = title;
+    project.type = type;
+    project.startDate = new Date(start_date);
+    project.endDate = new Date(end_date);
+    project.description = description;
+    project.status = status;
+    await project.save();
+    res.redirect(`/admin/employee-project-info/${id}`);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-/**
- * Description:
- * Gets the id of the employeed to be deleted form the parameters.
- * Find the given employee from User Scheme.
- * Deleteth employee from User Schema.
- *
+router.post("/delete-employee/:id", async (req, res) => {
+  const { id } = req.params;
 
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-
-router.post('/delete-employee/:id', function deleteEmployee(req, res) {
-    var id = req.params.id;
-    User.findByIdAndRemove({_id: id}, function deleteUser(err) {
-        if (err) {
-            console.log('unable to delete employee');
-        }
-        else {
-            res.redirect('/admin/view-all-employees');
-        }
-    });
+  try {
+    await User.findByIdAndRemove(id);
+    res.redirect("/admin/view-all-employees");
+  } catch (err) {
+    console.log("unable to delete employee");
+  }
 });
 
+router.post("/mark-attendance", async (req, res) => {
+  const { _id } = req.user;
+  const currentDate = new Date();
+  const date = currentDate.getDate();
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
 
-
-/**
- * Description:
- * Gets id of the current logged in user from the session.
- * Gets current date.
- * Marks the attendance of that user in Attendance Schema.
- *
-
- *
- * Last Updated: 28th November, 2016
- *
- * Known Bugs: None
- */
-
-router.post('/mark-attendance', function markAttendance(req, res, next) {
-
-    Attendance.find({
-        employeeID: req.session.user._id,
-        date: new Date().getDate(),
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear()
-    }, function getAttendance(err, docs) {
-        var found = 0;
-        if (docs.length > 0) {
-            found = 1;
-        }
-        else {
-
-            var newAttendance = new Attendance();
-            newAttendance.employeeID = req.session.user._id;
-            newAttendance.year = new Date().getFullYear();
-            newAttendance.month = new Date().getMonth() + 1;
-            newAttendance.date = new Date().getDate();
-            newAttendance.present = 1;
-            newAttendance.save(function saveAttendance(err) {
-                if (err) {
-                    console.log(err);
-                }
-
-            });
-        }
-        res.redirect('/admin/view-attendance-current');
-
+  try {
+    const attendance = await Attendance.find({
+      employeeID: _id,
+      date,
+      month,
+      year,
     });
 
+    if (attendance.length === 0) {
+      const newAttendance = new Attendance({
+        employeeID: _id,
+        year,
+        month,
+        date,
+        present: 1,
+      });
+      await newAttendance.save();
+    }
+
+    res.redirect("/admin/view-attendance-current");
+  } catch (err) {
+    console.log(err);
+  }
 });
+
 module.exports = router;
-
-/**
- * Description:
- * Checks if user is logged in then redirects user to the his/her home page.
- *
-
- *
- * Last Updated: 28th November, 2016
- *
- * Known Bugs: None
- */
-
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-}
-
-/**
- * Description:
- * Checks if user is not logged in then redirects user to the login page.
- *
-
- *
- * Last Updated: 28th November, 2016
- *
- * Known Bugs: None
- */
-function notLoggedIn(req, res, next) {
-    if (!req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-}
