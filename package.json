@@ -17,7 +17,7 @@
     "ejs": "~2.5.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "express-validator": "^2.21.0",
+    "express-validator": "^7.0.1",
     "moment": "^2.27.0",
     "mongoose": "^5.7.5",
     "mongoose-type-email": "^1.0.2",
