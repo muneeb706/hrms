@@ -18,7 +18,7 @@ router.get("/", function viewHome(req, res, next) {
   res.render("Admin/adminHome", {
     title: "Admin Home",
     csrfToken: req.csrfToken(),
-    userName: req.user.name,  
+    userName: req.user.name,
   });
 });
 

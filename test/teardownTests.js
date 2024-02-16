@@ -1,5 +1,5 @@
-const app = require('../app');
-const db = require('../db');
+const app = require("../app");
+const db = require("../db");
 
 module.exports = async () => {
   await admin_agent.get("/logout");

@@ -1,46 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/normalize.css" />
-    <link rel="stylesheet" href="/stylesheets/login.css" />
-  </head>
 
-  <body>
-    <div class="login">
-      <h1>HRMS</h1>
-      <% if(hasErrors) { %> 
-        <div style="background-color: red; color: white; padding: 5px; margin-bottom: 20px;">
-          <% messages.forEach(function(item) { %>
-            <p id="message"><%= item %></p>
-          <% }) %> 
-        </div>
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="/stylesheets/normalize.css" />
+  <link rel="stylesheet" href="/stylesheets/login.css" />
+</head>
+
+<body>
+  <div class="login">
+    <h1>HRMS</h1>
+    <% if(hasErrors) { %>
+      <div style="background-color: red; color: white; padding: 5px; margin-bottom: 20px;">
+        <% messages.forEach(function(item) { %>
+          <p id="message">
+            <%= item %>
+          </p>
+          <% }) %>
+      </div>
       <% } %>
-      <form action="/login" method="post">
-        <input
-          type="text"
-          id="email"
-          name="email"
-          placeholder="Enter Email Address"
-          required="required"
-        />
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Enter Password"
-          required="required"
-        />
-        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-        <button
-          type="submit"
-          id="login"
-          class="btn btn-primary btn-block btn-large"
-        >
-          Login
-        </button>
-      </form>
-    </div>
-  </body>
-  <script src="/javascripts/prefixfree.min.js"></script>
+        <form action="/login" method="post">
+          <input type="text" id="email" name="email" placeholder="Enter Email Address" required="required" />
+          <input type="password" id="password" name="password" placeholder="Enter Password" required="required" />
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+          <button type="submit" id="login" class="btn btn-primary btn-block btn-large">
+            Login
+          </button>
+        </form>
+  </div>
+</body>
+<script src="/javascripts/prefixfree.min.js"></script>
+
 </html>

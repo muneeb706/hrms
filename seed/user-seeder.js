@@ -19,12 +19,11 @@ let User = require("../models/user");
 let bcrypt = require("bcrypt-nodejs");
 let mongoose = require("mongoose");
 
-const db = require('../db');
+const db = require("../db");
 
 db.connect()
-  .then(() => console.log('Database connected'))
-  .catch((err) => console.error('Database connection error', err));
-
+  .then(() => console.log("Database connected"))
+  .catch((err) => console.error("Database connection error", err));
 
 let users = [
   new User({
