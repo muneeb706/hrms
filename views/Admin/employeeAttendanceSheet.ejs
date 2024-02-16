@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
   <body>
     <nav class="navbar navbar-default no-margin">
       <!-- Brand and toggle get grouped for better mobile display -->
 
       <div class="navbar-header fixed-brand">
-        <button
-          type="button"
-          class="navbar-toggle collapsed"
-          data-toggle="collapse"
-          id="menu-toggle"
-        >
-          <span
-            class="glyphicon glyphicon-th-large"
-            style="margin-left: 5px"
-            aria-hidden="true"
-          ></span>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" id="menu-toggle">
+          <span class="glyphicon glyphicon-th-large" style="margin-left: 5px" aria-hidden="true"></span>
         </button>
-        <a class="navbar-brand" href="#"
-          ><i class="fa fa-a fa-4"></i>
+        <a class="navbar-brand" href="#"><i class="fa fa-a fa-4"></i>
           <%=userName%>
         </a>
       </div>
@@ -29,25 +19,13 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li class="active">
-            <button
-              class="navbar-toggle collapse in"
-              data-toggle="collapse"
-              id="menu-toggle-2"
-            >
-              <span
-                class="glyphicon glyphicon-th-large"
-                aria-hidden="true"
-              ></span>
+            <button class="navbar-toggle collapse in" data-toggle="collapse" id="menu-toggle-2">
+              <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>
             </button>
           </li>
           <li class="navbar-brand">
             <form action="/logout" method="get">
-              <button
-                id="logout"
-                type="submit"
-                style="margin-top: -3px"
-                class="btn btn-default"
-              >
+              <button id="logout" type="submit" style="margin-top: -3px" class="btn btn-default">
                 <i class="fa fa-user" aria-hidden="true"></i> Logout
               </button>
             </form>
@@ -61,57 +39,35 @@
       <div id="sidebar-wrapper">
         <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
           <li>
-            <a href="#" id="menu3"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-users fa-stack-1x"></i
-              ></span>
-              Employees</a
-            >
+            <a href="#" id="menu3"><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x"></i></span>
+              Employees</a>
             <ul class="nav-pills nav-stacked" style="list-style-type: none">
               <li>
-                <a href="/admin/view-all-employees"
-                  ><span class="fa-stack fa-lg pull-left"
-                    ><i class="fa fa-eye fa-stack-1x"></i></span
-                  >View Employees</a
-                >
+                <a href="/admin/view-all-employees"><span class="fa-stack fa-lg pull-left"><i
+                      class="fa fa-eye fa-stack-1x"></i></span>View Employees</a>
               </li>
               <li>
-                <a href="/admin/add-employee"
-                  ><span class="fa-stack fa-lg pull-left"
-                    ><i class="fa fa-plus fa-stack-1x"></i></span
-                  >Add Employees</a
-                >
+                <a href="/admin/add-employee"><span class="fa-stack fa-lg pull-left"><i
+                      class="fa fa-plus fa-stack-1x"></i></span>Add Employees</a>
               </li>
             </ul>
           </li>
           <li>
-            <a href="/admin/leave-applications"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-envelope-square fa-stack-1x"></i
-              ></span>
-              Leave Applications</a
-            >
+            <a href="/admin/leave-applications"><span class="fa-stack fa-lg pull-left"><i
+                  class="fa fa-envelope-square fa-stack-1x"></i></span>
+              Leave Applications</a>
           </li>
           <li class="active" data-toggle="modal" data-target="#myModal">
             <a href="#">
-              <span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-list-ol fa-stack-1x"></i></span
-              >View Attendance</a
-            >
+              <span class="fa-stack fa-lg pull-left"><i class="fa fa-list-ol fa-stack-1x"></i></span>View Attendance</a>
           </li>
           <li data-toggle="modal" data-target="#myModal2">
-            <a href="#"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-check-circle fa-stack-1x"></i></span
-              >Mark Attendance</a
-            >
+            <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-check-circle fa-stack-1x"></i></span>Mark
+              Attendance</a>
           </li>
           <li>
-            <a href="/admin/view-profile"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-user fa-stack-1x"></i></span
-              >View Profile</a
-            >
+            <a href="/admin/view-profile"><span class="fa-stack fa-lg pull-left"><i
+                  class="fa fa-user fa-stack-1x"></i></span>View Profile</a>
           </li>
         </ul>
       </div>
@@ -126,42 +82,36 @@
               <br />
               <div style="height: 600px; overflow: auto">
                 <%if (found===1){%>
-                <table
-                  id="example"
-                  class="display"
-                  cellspacing="0"
-                  style="height: 10%; overflow: auto"
-                >
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Date</th>
-                      <th>Status</th>
-                    </tr>
-                  </tfoot>
-                  <tbody>
-                    <%attendance.forEach(function(item){%>
-                    <tr>
-                      <td>
-                        <%=moment(item.month+"
-                        /"+item.date+"/"+item.year).format('MMMM Do YYYY');%>
-                      </td>
-                      <td>Present</td>
-                    </tr>
-                    <%});%>
-                  </tbody>
-                </table>
-                <%}else{%>
-                <p>
-                  Unable to find any record of attendance for
-                  <%=employee_name%>.
-                </p>
-                <%}%>
+                  <table id="example" class="display" cellspacing="0" style="height: 10%; overflow: auto">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                      <%attendance.forEach(function(item){%>
+                        <tr>
+                          <td>
+                            <%=moment(item.month+" /"+item.date+"/"+item.year).format('MMMM Do YYYY');%>
+                          </td>
+                          <td>Present</td>
+                        </tr>
+                        <%});%>
+                    </tbody>
+                  </table>
+                  <%}else{%>
+                    <p>
+                      Unable to find any record of attendance for
+                      <%=employee_name%>.
+                    </p>
+                    <%}%>
               </div>
             </div>
           </div>
@@ -171,14 +121,8 @@
     </div>
     <!-- /#wrapper -->
     <!-- jQuery -->
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.js"
-      charset="UTF-8"
-    ></script>
-    <script
-      src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js"
-      charset="UTF-8"
-    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.js" charset="UTF-8"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" charset="UTF-8"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="/javascripts/sidebar_menu.js"></script>
     <script>
@@ -193,8 +137,8 @@
           if (title != " ") {
             $(this).html(
               '<input type="text" class="form-control" placeholder="Search ' +
-                title +
-                '" />'
+              title +
+              '" />'
             );
           }
         });
@@ -288,4 +232,5 @@
       </div>
     </div>
   </div>
+
 </html>

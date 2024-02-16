@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
   <body>
     <nav class="navbar navbar-default no-margin">
       <!-- Brand and toggle get grouped for better mobile display -->
 
       <div class="navbar-header fixed-brand">
-        <button
-          type="button"
-          class="navbar-toggle collapsed"
-          data-toggle="collapse"
-          id="menu-toggle"
-        >
-          <span
-            class="glyphicon glyphicon-th-large"
-            style="margin-left: 5px"
-            aria-hidden="true"
-          ></span>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" id="menu-toggle">
+          <span class="glyphicon glyphicon-th-large" style="margin-left: 5px" aria-hidden="true"></span>
         </button>
-        <a class="navbar-brand" href="#"
-          ><i class="fa fa-a fa-4"></i>
+        <a class="navbar-brand" href="#"><i class="fa fa-a fa-4"></i>
           <%= userName %>
         </a>
       </div>
@@ -29,25 +19,13 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li class="active">
-            <button
-              class="navbar-toggle collapse in"
-              data-toggle="collapse"
-              id="menu-toggle-2"
-            >
-              <span
-                class="glyphicon glyphicon-th-large"
-                aria-hidden="true"
-              ></span>
+            <button class="navbar-toggle collapse in" data-toggle="collapse" id="menu-toggle-2">
+              <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>
             </button>
           </li>
           <li class="navbar-brand">
             <form action="/logout" method="get">
-              <button
-                id="logout"
-                type="submit"
-                style="margin-top: -3px"
-                class="btn btn-default"
-              >
+              <button id="logout" type="submit" style="margin-top: -3px" class="btn btn-default">
                 <i class="fa fa-user" aria-hidden="true"></i> Logout
               </button>
             </form>
@@ -61,57 +39,35 @@
       <div id="sidebar-wrapper">
         <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
           <li>
-            <a href="#" id="menu3"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-users fa-stack-1x"></i
-              ></span>
-              Employees</a
-            >
+            <a href="#" id="menu3"><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x"></i></span>
+              Employees</a>
             <ul class="nav-pills nav-stacked" style="list-style-type: none">
               <li class="active">
-                <a href="/admin/view-all-employees"
-                  ><span class="fa-stack fa-lg pull-left"
-                    ><i class="fa fa-eye fa-stack-1x"></i></span
-                  >View Employees</a
-                >
+                <a href="/admin/view-all-employees"><span class="fa-stack fa-lg pull-left"><i
+                      class="fa fa-eye fa-stack-1x"></i></span>View Employees</a>
               </li>
               <li>
-                <a href="/admin/add-employee"
-                  ><span class="fa-stack fa-lg pull-left"
-                    ><i class="fa fa-plus fa-stack-1x"></i></span
-                  >Add Employees</a
-                >
+                <a href="/admin/add-employee"><span class="fa-stack fa-lg pull-left"><i
+                      class="fa fa-plus fa-stack-1x"></i></span>Add Employees</a>
               </li>
             </ul>
           </li>
           <li>
-            <a href="/admin/leave-applications"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-envelope-square fa-stack-1x"></i
-              ></span>
-              Leave Applications</a
-            >
+            <a href="/admin/leave-applications"><span class="fa-stack fa-lg pull-left"><i
+                  class="fa fa-envelope-square fa-stack-1x"></i></span>
+              Leave Applications</a>
           </li>
           <li data-toggle="modal" data-target="#myModal">
             <a href="#">
-              <span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-list-ol fa-stack-1x"></i></span
-              >View Attendance</a
-            >
+              <span class="fa-stack fa-lg pull-left"><i class="fa fa-list-ol fa-stack-1x"></i></span>View Attendance</a>
           </li>
           <li data-toggle="modal" data-target="#myModal2">
-            <a href="#"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-check-circle fa-stack-1x"></i></span
-              >Mark Attendance</a
-            >
+            <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-check-circle fa-stack-1x"></i></span>Mark
+              Attendance</a>
           </li>
           <li>
-            <a href="/admin/view-profile"
-              ><span class="fa-stack fa-lg pull-left"
-                ><i class="fa fa-user fa-stack-1x"></i></span
-              >View Profile</a
-            >
+            <a href="/admin/view-profile"><span class="fa-stack fa-lg pull-left"><i
+                  class="fa fa-user fa-stack-1x"></i></span>View Profile</a>
           </li>
         </ul>
       </div>
@@ -123,12 +79,7 @@
             <div class="col-lg-12">
               <h1>All Employees</h1>
               <div style="height: 600px; overflow: auto">
-                <table
-                  id="example"
-                  class="display"
-                  cellspacing="0"
-                  style="height: 10%; overflow: auto"
-                >
+                <table id="example" class="display" cellspacing="0" style="height: 10%; overflow: auto">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -152,98 +103,75 @@
                   <tbody>
                     <% users.forEach(function(item){ %>
 
-                    <tr>
-                      <td><%= item.name %></td>
-                      <td><%= item.email %></td>
-                      <td><%= item.contactNumber %></td>
-                      <td>
-                        <% if(!item.department){%> <%="N /A"%> <% } else{%>
-                        <%=item.department%> <%}%>
-                      </td>
-                      <td>
-                        <% if(!item.designation){%> <%="N /A"%> <% } else{%>
-                        <%=item.designation%> <%}%>
-                      </td>
-                      <td>
-                        <table cellspacing="0px">
-                          <tr>
-                            <td style="padding: 0%">
-                              <form
-                                method="get"
-                                action="/admin/employee-profile/<%= item._id %>"
-                              >
-                                <button type="submit">
-                                  <i
-                                    class="fa fa-eye"
-                                    title="View Employee Details"
-                                    aria-hidden="true"
-                                  ></i>
+                      <tr>
+                        <td>
+                          <%= item.name %>
+                        </td>
+                        <td>
+                          <%= item.email %>
+                        </td>
+                        <td>
+                          <%= item.contactNumber %>
+                        </td>
+                        <td>
+                          <% if(!item.department){%>
+                            <%="N /A"%>
+                              <% } else{%>
+                                <%=item.department%>
+                                  <%}%>
+                        </td>
+                        <td>
+                          <% if(!item.designation){%>
+                            <%="N /A"%>
+                              <% } else{%>
+                                <%=item.designation%>
+                                  <%}%>
+                        </td>
+                        <td>
+                          <table cellspacing="0px">
+                            <tr>
+                              <td style="padding: 0%">
+                                <form method="get" action="/admin/employee-profile/<%= item._id %>">
+                                  <button type="submit">
+                                    <i class="fa fa-eye" title="View Employee Details" aria-hidden="true"></i>
+                                  </button>
+                                </form>
+                              </td>
+                              <td style="padding: 0%">
+                                <form method="get" action="/admin/edit-employee/<%= item._id %>">
+                                  <button type="submit">
+                                    <i class="fa fa-pencil-square" title="Edit Employee's Profile"
+                                      aria-hidden="true"></i>
+                                  </button>
+                                </form>
+                              </td>
+                              <td style="padding: 0%">
+                                <button data-toggle="modal" class="delete-button" id="<%= item._id %>"
+                                  data-target="#myModal1">
+                                  <i class="fa fa-trash" title="Delete Employee" aria-hidden="true"></i>
                                 </button>
-                              </form>
-                            </td>
-                            <td style="padding: 0%">
-                              <form
-                                method="get"
-                                action="/admin/edit-employee/<%= item._id %>"
-                              >
-                                <button type="submit">
-                                  <i
-                                    class="fa fa-pencil-square"
-                                    title="Edit Employee's Profile"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
-                              </form>
-                            </td>
-                            <td style="padding: 0%">
-                              <button
-                                data-toggle="modal"
-                                class="delete-button"
-                                id="<%= item._id %>"
-                                data-target="#myModal1"
-                              >
-                                <i
-                                  class="fa fa-trash"
-                                  title="Delete Employee"
-                                  aria-hidden="true"
-                                ></i>
-                              </button>
-                            </td>
-                            <% if(item.type !="accounts_manager" ){ %>
-                            <td style="padding: 0%">
-                              <form
-                                method="get"
-                                action="/admin/add-employee-project/<%= item._id %>"
-                              >
-                                <button type="submit">
-                                  <i
-                                    class="fa fa-plus"
-                                    title="Add Employee Project"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
-                              </form>
-                            </td>
-                            <td style="padding: 0%">
-                              <form
-                                method="get"
-                                action="/admin/all-employee-projects/<%= item._id %>"
-                              >
-                                <button type="submit">
-                                  <i
-                                    class="fa fa-tasks"
-                                    title="View Employee Projects"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
-                              </form>
-                            </td>
-                            <% } %>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <% }) %>
+                              </td>
+                              <% if(item.type !="accounts_manager" ){ %>
+                                <td style="padding: 0%">
+                                  <form method="get" action="/admin/add-employee-project/<%= item._id %>">
+                                    <button type="submit">
+                                      <i class="fa fa-plus" title="Add Employee Project" aria-hidden="true"></i>
+                                    </button>
+                                  </form>
+                                </td>
+                                <td style="padding: 0%">
+                                  <form method="get" action="/admin/all-employee-projects/<%= item._id %>">
+                                    <button type="submit">
+                                      <i class="fa fa-tasks" title="View Employee Projects" aria-hidden="true"></i>
+                                    </button>
+                                  </form>
+                                </td>
+                                <% } %>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <% }) %>
                   </tbody>
                 </table>
               </div>
@@ -255,14 +183,8 @@
     </div>
     <!-- /#wrapper -->
     <!-- jQuery -->
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.js"
-      charset="UTF-8"
-    ></script>
-    <script
-      src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js"
-      charset="UTF-8"
-    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.js" charset="UTF-8"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" charset="UTF-8"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="/javascripts/sidebar_menu.js"></script>
     <script>
@@ -298,8 +220,8 @@
           if (title != " ") {
             $(this).html(
               '<input type="text" class="form-control" placeholder="Search ' +
-                title +
-                '" />'
+              title +
+              '" />'
             );
           }
         });
@@ -420,4 +342,5 @@
       </div>
     </div>
   </div>
+
 </html>
