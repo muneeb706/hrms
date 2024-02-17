@@ -11,17 +11,17 @@ const path = require("path");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
-const MongoStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
 const favicon = require("serve-favicon");
 
 const index = require("./routes/index");
 const admin = require("./routes/admin");
 const employee = require("./routes/employee");
 const manager = require("./routes/manager");
+const db = require("./db");
 
 expressValidator = require("express-validator");
 
@@ -65,8 +65,8 @@ app.use(
     secret: "mysupersecret",
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({
-      mongooseConnection: mongoose.connection,
+    store: MongoStore.create({
+      client: db.getConnection().getClient(),
     }),
     cookie: { maxAge: 180 * 60 * 1000 },
   })

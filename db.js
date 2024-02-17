@@ -14,7 +14,8 @@ const connect = (opts = {}) => {
     default:
       url = process.env.DB_URL;
   }
-
+  
+  
   return mongoose.connect(url, {
     ...opts,
     useNewUrlParser: true,
@@ -27,4 +28,8 @@ const close = () => {
   return mongoose.connection.close();
 };
 
-module.exports = { connect, close };
+const getConnection = () => {
+  return mongoose.connection;
+};
+
+module.exports = { connect, close, getConnection };

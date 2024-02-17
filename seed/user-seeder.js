@@ -83,4 +83,5 @@ let users = [
 
 function exit() {
   mongoose.disconnect();
+  console.log("Users Added...")
 }
