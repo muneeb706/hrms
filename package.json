@@ -22,7 +22,7 @@
     "mongoose": "^5.7.5",
     "mongoose-type-email": "^1.0.2",
     "morgan": "^1.10.0",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.5.0"
   },
