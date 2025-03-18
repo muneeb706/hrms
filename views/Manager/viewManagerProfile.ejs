@@ -35,34 +35,33 @@
             <!-- Sidebar -->
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
-
                     <li>
-                        <a href="/manager/applied-leaves"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-dashboard fa-stack-1x "></i></span> View Leaves</a>
+                        <a href="/manager/dashboard"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-tachometer fa-stack-1x "></i></span> Dashboard</a>
                     </li>
                     <li>
-                        <a href="/manager/view-employees">
-                            <button type="submit" style="background: transparent; border: transparent;"><i
-                                    class="fa fa-users fa-lg " aria-hidden="true"></i> View Employees
-                            </button>
-                        </a>
+                        <a href="/manager/view-employees"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-users fa-stack-1x "></i></span> View Employees</a>
                     </li>
                     <li>
                         <a href="/manager/apply-for-leave"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-envelope-square fa-stack-1x "></i></span>Apply for Leave</a>
+                                    class="fa fa-envelope-square fa-stack-1x "></i></span> Apply for Leave</a>
                     </li>
-                    <li data-toggle="modal" data-target="#myModal">
-                        <a href="#"> <span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-list-ol fa-stack-1x "></i></span>View
-                            Attendance</a>
+                    <li>
+                        <a href="/manager/applied-leaves"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-list fa-stack-1x "></i></span> View Leaves</a>
                     </li>
-                    <li data-toggle="modal" data-target="#myModal2">
-                        <a href="#"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-check-circle fa-stack-1x "></i></span>Mark Attendance</a>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-list-ol fa-stack-1x "></i></span> View Attendance</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal2').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-check-circle fa-stack-1x "></i></span> Mark Attendance</a>
                     </li>
                     <li class="active">
                         <a href="/manager/view-profile"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-user fa-stack-1x "></i></span>View Profile</a>
+                                    class="fa fa-user fa-stack-1x "></i></span> View Profile</a>
                     </li>
                 </ul>
             </div><!-- /#sidebar-wrapper -->
@@ -138,11 +137,28 @@
 
         <script src="/javascripts/sidebar_menu.js"></script>
         <script>
-
-            $(document).ready(function () {
+            $(document).ready(function() {
                 for (i = new Date().getFullYear(); i > 1900; i--) {
                     $('#year').append($('<option />').val(i).html(i));
                 }
+                
+                // Fix active menu state on all modals
+                // This script runs after sidebar_menu.js and fixes the active state issues
+                // Maintain correct active item 
+                $('#menu li').removeClass('active');
+                $('#menu li:eq(6)').addClass('active'); // View Profile is active
+                
+                // Remove all click handlers from menu items with modal triggers
+                $('a[onclick*="modal"]').off('click');
+                
+                // Fix modals messing with active states
+                $('.modal').on('show.bs.modal hide.bs.modal', function (e) {
+                    // Force View Profile to remain active regardless of modal state
+                    setTimeout(function() {
+                        $('#menu li').removeClass('active');
+                        $('#menu li:eq(6)').addClass('active');
+                    }, 50);
+                });
             });
         </script>
     </body>

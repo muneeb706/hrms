@@ -26,6 +26,60 @@ router.get("/", function viewHomePage(req, res, next) {
 });
 
 /**
+ * Dashboard route for Sprint 1
+ * This displays statistics about users, attendance, and other metrics
+ */
+router.get("/dashboard", function viewDashboard(req, res, next) {
+  const today = new Date();
+  
+  // Promise-based approach to get all counts in parallel
+  Promise.all([
+    User.countDocuments({ type: "admin" }),
+    User.countDocuments({ type: { $in: ["project_manager", "accounts_manager"] } }),
+    User.countDocuments({ type: "employee" }),
+    // For attendance counts, we need to filter by date
+    Attendance.countDocuments({ 
+      date: { 
+        $gte: new Date(today.setHours(0, 0, 0, 0)), 
+        $lt: new Date(today.setHours(23, 59, 59, 999)) 
+      },
+      status: "Present"
+    }),
+    Attendance.countDocuments({ 
+      date: { 
+        $gte: new Date(today.setHours(0, 0, 0, 0)), 
+        $lt: new Date(today.setHours(23, 59, 59, 999)) 
+      },
+      status: "Late"
+    }),
+    // Total employee count for calculating absent
+    User.countDocuments({ type: { $in: ["employee", "project_manager", "accounts_manager"] } })
+  ])
+  .then(results => {
+    const [adminCount, managerCount, employeeCount, attendanceCount, lateCount, totalEmployeeCount] = results;
+    
+    // Calculate absent as total employees minus those present or late
+    const absentCount = totalEmployeeCount - (attendanceCount + lateCount);
+    
+    res.render("Manager/dashboard", {
+      title: "Dashboard",
+      csrfToken: req.csrfToken(),
+      userName: req.user.name,
+      adminCount: adminCount,
+      managerCount: managerCount,
+      employeeCount: employeeCount,
+      attendanceCount: attendanceCount,
+      lateCount: lateCount,
+      absentCount: absentCount
+    });
+  })
+  .catch(err => {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  });
+});
+
+/**
  * Checks which type of manager is logged in.
  * Displays the list of employees to the manager respectively.
  * In case of accounts manager checks if user has entry in UserSalary Schema.

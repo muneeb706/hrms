@@ -10,6 +10,7 @@
 const db = require("../db");
 
 let server;
+let port;
 
 db.connect()
   .then(() => {
@@ -20,7 +21,7 @@ db.connect()
     /**
      * Get port from environment and store in Express.
      */
-    const port = normalizePort(process.env.PORT || "3000");
+    port = normalizePort(process.env.PORT || "3000");
     /**
      * Create HTTP server.
      */
