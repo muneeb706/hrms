@@ -1,0 +1,135 @@
+<%- include('../Partials/header') %>
+<%- include('../Partials/employee_navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Dashboard</h1>
+            
+            <div class="row">
+                <!-- Projects Card -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-tasks fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><%= totalProjects %></div>
+                                    <div>Total Projects</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/employee/view-all-projects">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Leaves Card -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-calendar fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><%= totalLeaves %></div>
+                                    <div>Total Leaves</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/employee/applied-leaves">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pending Leaves Card -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-clock-o fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><%= pendingLeaves %></div>
+                                    <div>Pending Leaves</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/employee/applied-leaves">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Attendance Card -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-check-circle fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><%= monthAttendance %></div>
+                                    <div>Days Present This Month</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/employee/view-attendance-current">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Status -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Today's Status</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item">
+                                    <span class="badge"><%= todayAttendance %></span>
+                                    <i class="fa fa-fw fa-calendar"></i> Attendance Status
+                                </a>
+                                <% if(todayAttendance === "Absent") { %>
+                                <form action="/employee/mark-employee-attendance" method="post" style="margin-top: 10px;">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-primary">Mark Attendance</button>
+                                </form>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../Partials/footer') %> 

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+    <%- include('../partials/header') %>
+
+    <body>
+        <nav class="navbar navbar-default no-margin">
+            <!-- Brand and toggle get grouped for better mobile display -->
+
+            <div class="navbar-header fixed-brand">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" id="menu-toggle">
+                    <span class="glyphicon glyphicon-th-large" style="margin-left:5px;" aria-hidden="true"></span>
+                </button>
+                <a class="navbar-brand" href="#"><i class="fa fa-a fa-4"></i>
+                    <%= userName %>
+                </a>
+            </div><!-- navbar-header-->
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <button class="navbar-toggle collapse in" data-toggle="collapse" id="menu-toggle-2"><span
+                                class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+                    </li>
+                    <li class="navbar-brand">
+                        <form action="/logout" method="get">
+                            <button id="logout" type="submit" style="margin-top: -3px;" class="btn btn-default"><i
+                                    class="fa fa-user" aria-hidden="true"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div><!-- bs-example-navbar-collapse-1 -->
+        </nav>
+        <div id="wrapper">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
+
+                    <li class="active">
+                        <a href="/manager/"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-tachometer fa-stack-1x "></i></span> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="/manager/view-employees"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-users fa-stack-1x "></i></span> View Employees</a>
+                    </li>
+                    <li>
+                        <a href="/manager/apply-for-leave"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-envelope-square fa-stack-1x "></i></span> Apply for Leave</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-list-ol fa-stack-1x "></i></span> View
+                            Attendance</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal2').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-check-circle fa-stack-1x "></i></span> Mark Attendance</a>
+                    </li>
+                    <li>
+                        <a href="/manager/view-profile"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-user fa-stack-1x "></i></span> View Profile</a>
+                    </li>
+                </ul>
+            </div><!-- /#sidebar-wrapper -->
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <div class="container-fluid xyz">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1>
+                                <i class="fa fa-angle-right"></i> Dashboard
+                            </h1>
+                            <div class="date-section">
+                                <p><span id="currentDay">Monday</span> <span class="text-muted" id="formattedDate">Loading time...</span></p>
+                                <div class="date-selector">
+                                    <button class="btn btn-dark" type="button" id="calendarToggle">
+                                        <i class="fa fa-calendar"></i> <span id="currentMonthYear">Loading...</span>
+                                    </button>
+                                    <div id="calendar-container"></div>
+                                </div>
+                            </div>
+
+                            <!-- First Row of Cards -->
+                            <div class="row dashboard-cards">
+                                <!-- Admin Card -->
+                                <div class="col-md-4">
+                                    <div class="card admin-card">
+                                        <h3>Admin</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= adminCount %></h2>
+                                        </div>
+                                        <a href="/admin/view-all-employees" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Manager Card -->
+                                <div class="col-md-4">
+                                    <div class="card manager-card">
+                                        <h3>Manager</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= managerCount %></h2>
+                                        </div>
+                                        <a href="/manager/view-employees" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Employee Card -->
+                                <div class="col-md-4">
+                                    <div class="card employee-card">
+                                        <h3>Employee</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= employeeCount %></h2>
+                                        </div>
+                                        <a href="/manager/view-employees" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Second Row of Cards -->
+                            <div class="row dashboard-cards">
+                                <!-- Today Attendance Card -->
+                                <div class="col-md-4">
+                                    <div class="card attendance-card">
+                                        <h3>Today Attendance</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= attendanceCount %></h2>
+                                        </div>
+                                        <a href="/manager/view-attendance" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Today Late Attendance Card -->
+                                <div class="col-md-4">
+                                    <div class="card late-card">
+                                        <h3>Today Late Attendance</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= lateCount %></h2>
+                                        </div>
+                                        <a href="/manager/view-attendance" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Today Absent Card -->
+                                <div class="col-md-4">
+                                    <div class="card absent-card">
+                                        <h3>Today Absent</h3>
+                                        <hr>
+                                        <div class="card-info">
+                                            <h4>Total:</h4>
+                                            <h2><%= absentCount %></h2>
+                                        </div>
+                                        <a href="/manager/view-attendance" class="view-more">View more <i class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#wrapper -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.js" charset="UTF-8"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" charset="UTF-8"></script>
+        <script src="/javascripts/sidebar_menu.js"></script>
+        <script src="/javascripts/dashboard-clock.js"></script>
+        
+        <!-- Bootstrap Datepicker -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+        
+        <script>
+            $(document).ready(function(){
+                // Initialize the datepicker
+                $('#calendar-container').datepicker({
+                    format: 'yyyy-mm-dd',
+                    startDate: '-1y',
+                    endDate: '+1y',
+                    autoclose: false,
+                    todayHighlight: true,
+                    calendarWeeks: true,
+                    clearBtn: true,
+                    disableTouchKeyboard: true,
+                    language: 'en',
+                    todayBtn: 'linked'
+                }).on('changeDate', function(e) {
+                    // Khi người dùng chọn một ngày, cập nhật hiển thị và có thể thực hiện các hành động khác
+                    const selectedDate = e.date;
+                    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    
+                    const day = selectedDate.getDate();
+                    const dayOfWeek = dayNames[selectedDate.getDay()];
+                    const month = monthNames[selectedDate.getMonth()];
+                    const year = selectedDate.getFullYear();
+                    
+                    // Cập nhật hiển thị
+                    $('#currentDay').text(dayOfWeek);
+                    $('#currentMonthYear').text(month + ", " + year);
+                    
+                    // Định dạng ngày tháng để hiển thị
+                    function getDayWithSuffix(day) {
+                        if (day >= 11 && day <= 13) {
+                            return day + "th";
+                        }
+                        switch (day % 10) {
+                            case 1: return day + "st";
+                            case 2: return day + "nd";
+                            case 3: return day + "rd";
+                            default: return day + "th";
+                        }
+                    }
+                    
+                    const formattedDate = getDayWithSuffix(day) + " of " + month + " " + year;
+                    $('#formattedDate').text(formattedDate);
+                    
+                    // Ẩn calendar sau khi chọn
+                    $('#calendar-container').hide();
+                    
+                    // Bạn có thể thêm code để load dữ liệu theo ngày đã chọn ở đây
+                    // Ví dụ: loadDashboardData(selectedDate);
+                });
+                
+                // Toggle calendar visibility when date button is clicked
+                $('#calendarToggle').click(function(e){
+                    e.preventDefault();
+                    $('#calendar-container').toggle();
+                });
+                
+                // Hide calendar when clicking outside
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('#calendarToggle, #calendar-container').length) {
+                        $('#calendar-container').hide();
+                    }
+                });
+                
+                // Hide calendar initially
+                $('#calendar-container').hide();
+                
+                // Đảm bảo Dashboard tab luôn active
+                $('#menu li a').click(function(e) {
+                    // Chỉ thực hiện cho các liên kết thông thường, không phải các liên kết modal
+                    if (!$(this).attr('onclick')) {
+                        $('#menu li').removeClass('active');
+                        $(this).parent().addClass('active');
+                    }
+                });
+            });
+        </script>
+        
+        <!-- View Attendance Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <form method="get" action="/manager/view-attendance">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">View Attendance</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Select date to view attendance:</p>
+                            <input type="date" class="form-control" name="date" value="<%= new Date().toISOString().substr(0, 10) %>">
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">View</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Mark Attendance Modal -->
+        <div id="myModal2" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <form method="post" action="/manager/mark-manager-attendance">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Mark Attendance</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to mark attendance.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="reset" class="btn btn-default" data-dismiss="modal">No</button>
+                            <button type="submit" class="btn btn-primary">Yes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Fix active menu state on all modals -->
+        <script>
+            // This script runs after sidebar_menu.js and fixes the active state issues
+            $(document).ready(function() {
+                // Maintain Dashboard as active item initially
+                $('#menu li').removeClass('active');
+                $('#menu li:first').addClass('active');
+                
+                // Store a reference to the original event handlers
+                var originalClickHandler = $._data($('#menu li a')[0], 'events').click[0].handler;
+                
+                // Remove all click handlers from menu items
+                $('#menu li a').off('click');
+                
+                // Add our custom handler to manage active state
+                $('#menu li a').on('click', function(e) {
+                    // Don't process if this is a modal trigger
+                    if ($(this).attr('onclick') && $(this).attr('onclick').indexOf('modal') !== -1) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return true; // Let the onclick handler run
+                    }
+                    
+                    // For regular links, set active and let default behavior happen
+                    $('#menu li').removeClass('active');
+                    $(this).parent().addClass('active');
+                });
+                
+                // Fix modals messing with active states
+                $('.modal').on('show.bs.modal hide.bs.modal', function (e) {
+                    // Force Dashboard to be active regardless of modal state
+                    setTimeout(function() {
+                        $('#menu li').removeClass('active');
+                        $('#menu li:first').addClass('active');
+                    }, 50);
+                });
+                
+                // Manually apply our handlers now
+                $('#menu li:first').addClass('active');
+            });
+        </script>
+    </body>
+
+    <style>
+        .date-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .date-section p {
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .dashboard-cards {
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .card h3 {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        
+        .card hr {
+            margin: 10px 0;
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-info h4 {
+            margin: 0;
+        }
+        
+        .card-info h2 {
+            font-size: 30px;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .view-more {
+            display: block;
+            text-align: right;
+            color: inherit;
+            opacity: 0.8;
+        }
+        
+        .view-more:hover {
+            opacity: 1;
+            text-decoration: none;
+        }
+        
+        /* Card Colors */
+        .admin-card {
+            background-color: #2d6a4f;
+            color: white;
+        }
+        
+        .manager-card {
+            background-color: #40badf;
+            color: white;
+        }
+        
+        .employee-card {
+            background-color: #917c78;
+            color: white;
+        }
+        
+        .attendance-card {
+            background-color: #f4a261;
+            color: white;
+        }
+        
+        .late-card {
+            background-color: #774936;
+            color: white;
+        }
+        
+        .absent-card {
+            background-color: #000000;
+            color: white;
+        }
+        
+        .btn-dark {
+            background-color: #333;
+            color: white;
+            border: none;
+        }
+        
+        .btn-dark:hover, .btn-dark:focus {
+            background-color: #444;
+            color: white;
+        }
+        
+        /* Calendar Styles */
+        #calendar-container {
+            position: absolute;
+            right: 15px;
+            top: 60px;
+            z-index: 1000;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: white;
+        }
+        
+        .datepicker-inline {
+            width: 300px;
+        }
+        
+        .datepicker table {
+            width: 100%;
+        }
+        
+        .datepicker table tr td, .datepicker table tr th {
+            text-align: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+        }
+    </style>
+</html> 
