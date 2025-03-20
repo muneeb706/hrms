@@ -82,38 +82,60 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Set up routing for the application.
-// The first argument to app.use() is the base path for the routes defined in the provided router.
-// The second argument is the router object.
-// For example, app.use("/admin", admin) means that the routes defined in the 'admin' router will be used for any path that starts with '/admin'.
+// Thêm middleware xử lý session trước khi định tuyến
+app.use(function(req, res, next) {
+  res.locals.login = req.isAuthenticated();
+  res.locals.session = req.session;
+  res.locals.messages = req.flash();
+  // Thêm user vào locals để có thể truy cập từ views
+  res.locals.user = req.user;
+  next();
+});
+
+// Set up routing for the application
 app.use("/", index);
 app.use("/admin", admin);
 app.use("/manager", manager);
 app.use("/employee", employee);
 
-app.use(function (req, res, next) {
-  res.locals.login = req.isAuthenticated();
-  res.locals.session = req.session;
-  res.locals.messages = req.flash();
-  next();
-});
-
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   const err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
+  // Xử lý các loại lỗi khác nhau
+  if (err.name === "UnauthorizedError") {
+    req.flash("error", "Bạn không có quyền truy cập trang này");
+    return res.redirect("/");
+  }
+
+  // Xử lý lỗi TypeError (không thể đọc thuộc tính của undefined)
+  if (err instanceof TypeError && err.message.includes("Cannot read properties of undefined")) {
+    req.flash("error", "Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.");
+    return res.redirect("/");
+  }
+
   // render the error page
   res.status(err.status || 500);
   res.render("error");
+});
+
+// Thêm middleware bảo mật
+app.use(function(req, res, next) {
+  // Thêm các header bảo mật
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  next();
 });
 
 module.exports = app;

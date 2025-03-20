@@ -8,21 +8,88 @@ var Attendance = require("../models/attendance");
 var moment = require("moment");
 var Project = require("../models/project");
 var PerformanceAppraisal = require("../models/performance_appraisal");
+const { isLoggedIn, isManager, isProjectManager, isAccountsManager } = require("./middleware");
 
-router.use("/", isLoggedIn, function checkAuthentication(req, res, next) {
+// Middleware chung cho tất cả các route manager
+router.use("/", isLoggedIn, isManager, function checkAuthentication(req, res, next) {
   next();
 });
 
 /**
  * Displays home to the manager
  */
+router.get("/", async function viewHomePage(req, res, next) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-router.get("/", function viewHomePage(req, res, next) {
-  res.render("Manager/managerHome", {
-    title: "Manager Home",
-    csrfToken: req.csrfToken(),
-    userName: req.user.name,
-  });
+    // Get manager's department
+    const manager = await User.findById(req.user._id);
+    
+    // Get system statistics
+    const [
+      teamMembers,
+      activeProjects,
+      completedProjects,
+      inProgressProjects,
+      pendingLeaves,
+      todayAttendance
+    ] = await Promise.all([
+      // Count team members in same department
+      User.countDocuments({ 
+        department: manager.department,
+        type: "employee"
+      }),
+      
+      // Count active projects
+      Project.countDocuments({ 
+        status: "In Progress",
+        department: manager.department
+      }),
+
+      // Count completed projects
+      Project.countDocuments({
+        status: "Completed",
+        department: manager.department
+      }),
+
+      // Count in progress projects
+      Project.countDocuments({
+        status: "In Progress",
+        department: manager.department
+      }),
+      
+      // Count pending leaves for team
+      Leave.countDocuments({ 
+        adminResponse: "Pending",
+        department: manager.department
+      }),
+      
+      // Get today's attendance count for team
+      Attendance.countDocuments({
+        date: today.getDate(),
+        month: today.getMonth() + 1,
+        year: today.getFullYear(),
+        department: manager.department
+      })
+    ]);
+
+    res.render("Manager/managerHome", {
+      title: "Manager Home",
+      csrfToken: req.csrfToken(),
+      userName: req.user.name,
+      teamMembers,
+      activeProjects,
+      completedProjects,
+      inProgressProjects,
+      pendingLeaves,
+      todayAttendance,
+      moment: moment
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  }
 });
 
 /**
@@ -79,94 +146,23 @@ router.get("/dashboard", function viewDashboard(req, res, next) {
   });
 });
 
-/**
- * Checks which type of manager is logged in.
- * Displays the list of employees to the manager respectively.
- * In case of accounts manager checks if user has entry in UserSalary Schema.
- * Then it enters the data in UserSalary Schema if user is not present.
- * Otherwise gets the data from UserSalary Schema and shows the salary of the employees to the accounts manager
- */
-
-router.get("/view-employees", function viewEmployees(req, res) {
+// Route chỉ dành cho Project Manager
+router.get("/view-employees", isProjectManager, function viewEmployees(req, res) {
   var userChunks = [];
-  if (req.user.type === "project_manager") {
-    //find is asynchronous function
-    User.find({ type: "employee" })
-      .sort({ _id: -1 })
-      .exec(function getUser(err, docs) {
-        for (var i = 0; i < docs.length; i++) {
-          userChunks.push(docs[i]);
-        }
-        res.render("Manager/viewemp_project", {
-          title: "List Of Employees",
-          csrfToken: req.csrfToken(),
-          users: userChunks,
-          errors: 0,
-          userName: req.user.name,
-        });
-      });
-  } else if (req.user.type === "accounts_manager") {
-    //find is asynchronous function
-    var salaryChunks = [];
-
-    User.find({ $or: [{ type: "employee" }, { type: "project_manager" }] })
-      .sort({ _id: -1 })
-      .exec(function getUser(err, docs) {
-        if (err) {
-          console.log(err);
-        }
-        for (var i = 0; i < docs.length; i++) {
-          userChunks.push(docs[i]);
-        }
-      });
-
-    setTimeout(getUserSalaries, 900);
-
-    function getUserSalaries() {
-      function callback(i) {
-        if (i < userChunks.length) {
-          UserSalary.find(
-            { employeeID: userChunks[i]._id },
-            function (err, salary) {
-              console.log(i);
-
-              if (err) {
-                console.log(err);
-              }
-              if (salary.length > 0) {
-                salaryChunks.push(salary[0]);
-              } else {
-                var newSalary = new UserSalary();
-                newSalary.accountManagerID = req.user._id;
-                newSalary.employeeID = userChunks[i]._id;
-                newSalary.save(function (err) {
-                  if (err) {
-                    console.log(err);
-                  }
-                  salaryChunks.push(newSalary);
-                });
-              }
-
-              callback(i + 1);
-            }
-          );
-        }
+  User.find({ type: "employee" })
+    .sort({ _id: -1 })
+    .exec(function getUser(err, docs) {
+      for (var i = 0; i < docs.length; i++) {
+        userChunks.push(docs[i]);
       }
-
-      callback(0);
-    }
-
-    setTimeout(render_view, 2000);
-    function render_view() {
-      res.render("Manager/viewemp_accountant", {
+      res.render("Manager/viewemp_project", {
         title: "List Of Employees",
         csrfToken: req.csrfToken(),
         users: userChunks,
-        salary: salaryChunks,
+        errors: 0,
         userName: req.user.name,
       });
-    }
-  }
+    });
 });
 
 /**
@@ -230,94 +226,68 @@ router.get(
   }
 );
 
-/**
- * Description:
- * Displays employee project information to the project manager
- *
- 
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-
-router.get(
-  "/employee-project-info/:id",
-  function viewEmployeeProjectInfo(req, res, next) {
-    var projectId = req.params.id;
-    Project.findById(projectId, function getProject(err, project) {
+// Route chỉ dành cho Project Manager
+router.get("/employee-project-info/:id", isProjectManager, function viewEmployeeProjectInfo(req, res, next) {
+  var projectId = req.params.id;
+  Project.findById(projectId, function getProject(err, project) {
+    if (err) {
+      console.log(err);
+    }
+    User.findById(project.employeeID, function getUser(err, user) {
       if (err) {
         console.log(err);
       }
-      User.findById(project.employeeID, function getUser(err, user) {
-        if (err) {
-          console.log(err);
-        }
-        res.render("Manager/projectInfo", {
-          title: "Employee Project Information",
-          project: project,
-          employee: user,
-          moment: moment,
-          csrfToken: req.csrfToken(),
-          message: "",
-          userName: req.user.name,
-        });
+      res.render("Manager/projectInfo", {
+        title: "Employee Project Information",
+        project: project,
+        employee: user,
+        moment: moment,
+        csrfToken: req.csrfToken(),
+        message: "",
+        userName: req.user.name,
       });
     });
-  }
-);
+  });
+});
 
-/**
- * Description:
- * Displays the performance appraisal form for the employee to the project manager.
- *
- 
- *
- * Last Updated: 30th November, 2016
- *
- * Known Bugs: None
- */
-
-router.get(
-  "/provide-performance-appraisal/:id",
-  function providePerformanceAppraisal(req, res, next) {
-    var employeeId = req.params.id;
-    var userChunks = [];
-    PerformanceAppraisal.find(
-      { employeeID: employeeId },
-      function getPerformanceAppraisal(err, pa) {
-        if (pa.length > 0) {
-          User.find({ type: "employee" }, function getUser(err, docs) {
-            for (var i = 0; i < docs.length; i++) {
-              userChunks.push(docs[i]);
-            }
-            res.render("Manager/viewemp_project", {
-              title: "List Of Employees",
-              csrfToken: req.csrfToken(),
-              users: userChunks,
-              errors: 1,
-              userName: req.user.name,
-            });
+// Route chỉ dành cho Project Manager
+router.get("/provide-performance-appraisal/:id", isProjectManager, function providePerformanceAppraisal(req, res, next) {
+  var employeeId = req.params.id;
+  var userChunks = [];
+  PerformanceAppraisal.find(
+    { employeeID: employeeId },
+    function getPerformanceAppraisal(err, pa) {
+      if (pa.length > 0) {
+        User.find({ type: "employee" }, function getUser(err, docs) {
+          for (var i = 0; i < docs.length; i++) {
+            userChunks.push(docs[i]);
+          }
+          res.render("Manager/viewemp_project", {
+            title: "List Of Employees",
+            csrfToken: req.csrfToken(),
+            users: userChunks,
+            errors: 1,
+            userName: req.user.name,
           });
-        } else {
-          User.findById(employeeId, function getUser(err, user) {
-            if (err) {
-              console.log(err);
-            }
-            res.render("Manager/performance_appraisal", {
-              title: "Provide Performance Appraisal",
-              csrfToken: req.csrfToken(),
-              employee: user,
-              moment: moment,
-              message: "",
-              userName: req.user.name,
-            });
+        });
+      } else {
+        User.findById(employeeId, function getUser(err, user) {
+          if (err) {
+            console.log(err);
+          }
+          res.render("Manager/performance_appraisal", {
+            title: "Provide Performance Appraisal",
+            csrfToken: req.csrfToken(),
+            employee: user,
+            moment: moment,
+            message: "",
+            userName: req.user.name,
           });
-        }
+        });
       }
-    );
-  }
-);
+    }
+  );
+});
 
 /**
  * Description:
@@ -836,11 +806,15 @@ router.post(
     );
   }
 );
-module.exports = router;
 
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/");
-}
+// Route chỉ dành cho Accounts Manager
+router.get("/view-employee-salaries", isAccountsManager, function viewEmployeeSalaries(req, res) {
+  // Code xử lý xem lương nhân viên
+});
+
+// Route chỉ dành cho Accounts Manager
+router.get("/generate-payslip/:id", isAccountsManager, function generatePayslip(req, res) {
+  // Code xử lý tạo phiếu lương
+});
+
+module.exports = router;

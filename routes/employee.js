@@ -5,21 +5,133 @@ var Attendance = require("../models/attendance");
 var Project = require("../models/project");
 var moment = require("moment");
 var User = require("../models/user");
-var moment = require("moment");
+const { isLoggedIn, isEmployee } = require("./middleware");
 
-router.use("/", isLoggedIn, function checkAuthentication(req, res, next) {
-  next();
-});
+// Áp dụng middleware xác thực cho tất cả các route
+router.use(isLoggedIn);
+router.use(isEmployee);
 
 /**
  * Displays home page to the employee.
  */
-router.get("/", function viewHome(req, res, next) {
-  res.render("Employee/employeeHome", {
-    title: "Home",
-    userName: req.user.name,
-    csrfToken: req.csrfToken(),
-  });
+router.get("/", async function viewHome(req, res, next) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get employee's statistics
+    const [
+      totalProjects,
+      totalLeaves,
+      pendingLeaves,
+      todayAttendance,
+      monthAttendance
+    ] = await Promise.all([
+      // Count total projects assigned to employee
+      Project.countDocuments({ employeeID: req.user._id }),
+      
+      // Count total leaves
+      Leave.countDocuments({ applicantID: req.user._id }),
+      
+      // Count pending leaves
+      Leave.countDocuments({ 
+        applicantID: req.user._id,
+        adminResponse: "Pending"
+      }),
+      
+      // Check today's attendance
+      Attendance.findOne({
+        employeeID: req.user._id,
+        date: today.getDate(),
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      }),
+      
+      // Get current month attendance
+      Attendance.countDocuments({
+        employeeID: req.user._id,
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      })
+    ]);
+
+    res.render("Employee/employeeHome", {
+      title: "Home",
+      userName: req.user.name,
+      csrfToken: req.csrfToken(),
+      totalProjects,
+      totalLeaves,
+      pendingLeaves,
+      todayAttendance: todayAttendance ? "Present" : "Absent",
+      monthAttendance,
+      moment: moment
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  }
+});
+
+/**
+ * Dashboard route for employee
+ * This displays statistics about attendance, leaves, projects and other metrics
+ */
+router.get("/dashboard", async function viewDashboard(req, res, next) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get employee's statistics
+    const [
+      totalProjects,
+      totalLeaves,
+      pendingLeaves,
+      todayAttendance,
+      monthAttendance
+    ] = await Promise.all([
+      // Count total projects assigned to employee
+      Project.countDocuments({ employeeID: req.user._id }),
+      
+      // Count total leaves
+      Leave.countDocuments({ applicantID: req.user._id }),
+      
+      // Count pending leaves
+      Leave.countDocuments({ 
+        applicantID: req.user._id,
+        adminResponse: "Pending"
+      }),
+      
+      // Check today's attendance
+      Attendance.findOne({
+        employeeID: req.user._id,
+        date: today.getDate(),
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      }),
+      
+      // Get current month attendance
+      Attendance.countDocuments({
+        employeeID: req.user._id,
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      })
+    ]);
+
+    res.render("Employee/dashboard", {
+      title: "Dashboard",
+      csrfToken: req.csrfToken(),
+      userName: req.user.name,
+      totalProjects,
+      totalLeaves,
+      pendingLeaves,
+      todayAttendance: todayAttendance ? "Present" : "Absent",
+      monthAttendance,
+      moment: moment
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  }
 });
 
 /**
@@ -257,10 +369,3 @@ router.post(
   }
 );
 module.exports = router;
-
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/");
-}

@@ -36,8 +36,8 @@
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
 
-                    <li>
-                        <a href="/manager/dashboard"><span class="fa-stack fa-lg pull-left"><i
+                    <li class="active">
+                        <a href="/manager/"><span class="fa-stack fa-lg pull-left"><i
                                     class="fa fa-tachometer fa-stack-1x "></i></span> Dashboard</a>
                     </li>
                     <li>
@@ -47,10 +47,6 @@
                     <li>
                         <a href="/manager/apply-for-leave"><span class="fa-stack fa-lg pull-left"><i
                                     class="fa fa-envelope-square fa-stack-1x "></i></span> Apply for Leave</a>
-                    </li>
-                    <li class="active">
-                        <a href="/manager/applied-leaves"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-list fa-stack-1x "></i></span> View Leaves</a>
                     </li>
                     <li>
                         <a href="javascript:void(0);" onclick="$('#myModal').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
@@ -178,17 +174,17 @@
                 // This script runs after sidebar_menu.js and fixes the active state issues
                 // Maintain correct active item 
                 $('#menu li').removeClass('active');
-                $('#menu li:eq(3)').addClass('active'); // View Leaves is active
+                $('#menu li:eq(0)').addClass('active'); // Dashboard is active
                 
                 // Remove all click handlers from menu items with modal triggers
                 $('a[onclick*="modal"]').off('click');
                 
                 // Fix modals messing with active states
                 $('.modal').on('show.bs.modal hide.bs.modal', function (e) {
-                    // Force View Leaves to remain active regardless of modal state
+                    // Force Dashboard to remain active regardless of modal state
                     setTimeout(function() {
                         $('#menu li').removeClass('active');
-                        $('#menu li:eq(3)').addClass('active');
+                        $('#menu li:eq(0)').addClass('active');
                     }, 50);
                 });
             });

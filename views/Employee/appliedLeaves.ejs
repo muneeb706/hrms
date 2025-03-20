@@ -39,26 +39,25 @@
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
                     <li class="active">
-                        <a href="/employee/applied-leaves"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-dashboard fa-stack-1x"></i></span>
-                            View Leaves</a>
+                        <a href="/employee/"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-tachometer fa-stack-1x"></i></span>
+                            Dashboard</a>
                     </li>
                     <li>
                         <a href="/employee/apply-for-leave"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-envelope-square fa-stack-1x"></i></span>Apply for Leave</a>
+                                    class="fa fa-envelope-square fa-stack-1x"></i></span> Apply for Leave</a>
                     </li>
-                    <li data-toggle="modal" data-target="#myModal">
-                        <a href="#">
-                            <span class="fa-stack fa-lg pull-left"><i class="fa fa-list-ol fa-stack-1x"></i></span>View
-                            Attendance</a>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-list-ol fa-stack-1x"></i></span> View Attendance</a>
                     </li>
-                    <li data-toggle="modal" data-target="#myModal2">
-                        <a href="#"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-check-circle fa-stack-1x"></i></span>Mark Attendance</a>
+                    <li>
+                        <a href="javascript:void(0);" onclick="$('#myModal2').modal('show'); return false;"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-check-circle fa-stack-1x"></i></span> Mark Attendance</a>
                     </li>
                     <li>
                         <a href="/employee/view-profile"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-user fa-stack-1x"></i></span>View Profile</a>
+                                    class="fa fa-user fa-stack-1x"></i></span> View Profile</a>
                     </li>
                 </ul>
             </div>
@@ -167,6 +166,24 @@
                             that.search(this.value).draw();
                         }
                     });
+                });
+                
+                // Fix active menu state on all modals
+                // This script runs after sidebar_menu.js and fixes the active state issues
+                // Maintain correct active item 
+                $('#menu li').removeClass('active');
+                $('#menu li:eq(0)').addClass('active'); // Dashboard is active
+                
+                // Remove all click handlers from menu items with modal triggers
+                $('a[onclick*="modal"]').off('click');
+                
+                // Fix modals messing with active states
+                $('.modal').on('show.bs.modal hide.bs.modal', function (e) {
+                    // Force Dashboard to remain active regardless of modal state
+                    setTimeout(function() {
+                        $('#menu li').removeClass('active');
+                        $('#menu li:eq(0)').addClass('active');
+                    }, 50);
                 });
             });
         </script>

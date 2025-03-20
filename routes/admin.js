@@ -7,19 +7,129 @@ const config_passport = require("../config/passport.js");
 const moment = require("moment");
 const Leave = require("../models/leave");
 const Attendance = require("../models/attendance");
-const { isLoggedIn } = require("./middleware");
+const { isLoggedIn, isAdmin } = require("./middleware");
 
-router.use("/", isLoggedIn, function isAuthenticated(req, res, next) {
+router.use("/", isLoggedIn, isAdmin, function isAuthenticated(req, res, next) {
   next();
 });
 
+/**
+ * Dashboard route for admin
+ * This displays statistics about users, attendance, and other metrics
+ */
+router.get("/dashboard", async function viewDashboard(req, res, next) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get system statistics
+    const [
+      totalEmployees,
+      totalManagers,
+      totalProjects,
+      todayAttendance,
+      pendingLeaves,
+      totalLeaves
+    ] = await Promise.all([
+      // Count total employees
+      User.countDocuments({ type: "employee" }),
+      
+      // Count total managers
+      User.countDocuments({ 
+        type: { $in: ["project_manager", "accounts_manager"] } 
+      }),
+      
+      // Count total projects
+      Project.countDocuments({}),
+      
+      // Get today's attendance count
+      Attendance.countDocuments({
+        date: today.getDate(),
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      }),
+      
+      // Count pending leaves
+      Leave.countDocuments({ adminResponse: "Pending" }),
+      
+      // Count total leaves
+      Leave.countDocuments({})
+    ]);
+
+    res.render("Admin/dashboard", {
+      title: "Admin Dashboard",
+      csrfToken: req.csrfToken(),
+      userName: req.user.name,
+      totalEmployees,
+      totalManagers,
+      totalProjects,
+      todayAttendance,
+      pendingLeaves,
+      totalLeaves,
+      moment: moment
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  }
+});
+
 // Displays home page to the admin
-router.get("/", function viewHome(req, res, next) {
-  res.render("Admin/adminHome", {
-    title: "Admin Home",
-    csrfToken: req.csrfToken(),
-    userName: req.user.name,
-  });
+router.get("/", async function viewHome(req, res, next) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get system statistics
+    const [
+      totalEmployees,
+      totalManagers,
+      totalProjects,
+      todayAttendance,
+      pendingLeaves,
+      totalLeaves
+    ] = await Promise.all([
+      // Count total employees
+      User.countDocuments({ type: "employee" }),
+      
+      // Count total managers
+      User.countDocuments({ 
+        type: { $in: ["project_manager", "accounts_manager"] } 
+      }),
+      
+      // Count total projects
+      Project.countDocuments({}),
+      
+      // Get today's attendance count
+      Attendance.countDocuments({
+        date: today.getDate(),
+        month: today.getMonth() + 1,
+        year: today.getFullYear()
+      }),
+      
+      // Count pending leaves
+      Leave.countDocuments({ adminResponse: "Pending" }),
+      
+      // Count total leaves
+      Leave.countDocuments({})
+    ]);
+
+    res.render("Admin/adminHome", {
+      title: "Admin Home",
+      csrfToken: req.csrfToken(),
+      userName: req.user.name,
+      totalEmployees,
+      totalManagers,
+      totalProjects,
+      todayAttendance,
+      pendingLeaves,
+      totalLeaves,
+      moment: moment
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Error loading dashboard");
+  }
 });
 
 /**
