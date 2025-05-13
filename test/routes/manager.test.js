@@ -3,10 +3,10 @@ const cheerio = require("cheerio");
 
 describe("Project Manager Routes", () => {
   let pm_agent = null;
-
+  
   beforeAll(async () => {
     const request = require("supertest");
-    pm_agent = request.agent(global.app);
+    pm_agent = request.agent(app);
     const getRes = await pm_agent.get("/");
     const $ = cheerio.load(getRes.text);
     const csrfToken = $('input[name="_csrf"]').val();
