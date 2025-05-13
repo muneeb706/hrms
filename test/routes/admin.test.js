@@ -1,9 +1,32 @@
 const { expect } = require("@jest/globals");
 const db = require("../../db");
+const request = require("supertest");
 const cheerio = require("cheerio");
 const User = require("../../models/user");
 
 describe("Admin Routes", () => {
+  let admin_agent = null;
+
+  beforeAll(async () => {
+    await db.connect();
+    const app = require("../../app");
+    admin_agent = request.agent(app);
+    const getRes = await admin_agent.get("/");
+    const $ = cheerio.load(getRes.text);
+    const csrfToken = $('input[name="_csrf"]').val();
+
+    await admin_agent.post("/login").send({
+      _csrf: csrfToken,
+      email: "admin@admin.com",
+      password: "admin123",
+    });
+  });
+
+  afterAll(async () => {
+    await admin_agent.get("/logout");
+    await db.close();
+  });
+
   test("GET / should render admin home page", async () => {
     const res = await admin_agent.get("/admin/");
 
@@ -35,13 +58,11 @@ describe("Admin Routes", () => {
   test("GET /admin/employee-profile/:id should return employee profile", async () => {
     let employeeId;
     let employeeName;
-    await db.connect().then(async () => {
-      const employee = await User.findOne({ type: "accounts_manager" });
-      employeeId = employee._id;
-      employeeName = employee.name;
-      db.close();
-    });
-
+   
+    const employee = await User.findOne({ type: "accounts_manager" });
+    employeeId = employee._id;
+    employeeName = employee.name;
+  
     const res = await admin_agent.get(`/admin/employee-profile/${employeeId}`);
     expect(res.statusCode).toBe(200);
 

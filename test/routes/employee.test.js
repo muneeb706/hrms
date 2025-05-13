@@ -16,8 +16,8 @@ describe("Employee Routes", () => {
 
     await employee_agent.post("/login").send({
       _csrf: csrfToken,
-      email: "pm@pm.com",
-      password: "pm1234",
+      email: "employee1@employee.com",
+      password: "123456",
     });
   });
 
