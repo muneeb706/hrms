@@ -38,12 +38,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Debug MongoDB Connection
-        run: |
-          npm install mongoose
-          node -e 'require("mongoose").connect(process.env.DB_URL_TEST).then(() => console.log("MongoDB connection successful")).catch(err => console.error("MongoDB connection error:", err))'
-
-      - name: Run tests with debugging
+      - name: Run tests
         run: |
           echo "Running tests..."
           npm test
