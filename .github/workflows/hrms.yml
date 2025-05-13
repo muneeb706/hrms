@@ -3,10 +3,10 @@ name: HRMS CI
 on:
   push:
     branches:
-      - main # Run tests on push to the main branch
+      - master # Run tests on push to the main branch
   pull_request:
     branches:
-      - main # Run tests on pull requests to the main branch
+      - master # Run tests on pull requests to the main branch
 
 jobs:
   test:
