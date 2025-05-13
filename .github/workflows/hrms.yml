@@ -3,10 +3,10 @@ name: HRMS CI
 on:
   push:
     branches:
-      - master # Run tests on push to the main branch
+      - master
   pull_request:
     branches:
-      - master # Run tests on pull requests to the main branch
+      - master
 
 env:
   DB_URL_TEST: mongodb://localhost:27017/test-db
@@ -16,31 +16,34 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-        mongo:
-          image: mongo:5.0 # Use the MongoDB version you need
-          ports:
-            - 27017:27017
-          options: >-
-            --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
+      mongo:
+        image: mongo:5.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      # Step 1: Check out the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18 # Use the Node.js version your project requires
+          node-version: 18
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run tests
-      - name: Run tests
-        run: npm test
+      - name: Debug MongoDB Connection
+        run: |
+          npm install mongoose
+          node -e 'require("mongoose").connect(process.env.DB_URL_TEST).then(() => console.log("MongoDB connection successful")).catch(err => console.error("MongoDB connection error:", err))'
+
+      - name: Run tests with debugging
+        run: |
+          echo "Running tests..."
+          npm test

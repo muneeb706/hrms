@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 
 describe("Project Manager Routes", () => {
   test("GET / should render project manager home page", async () => {
-    const res = await pm_agent.get("/manager/");
+    const res = await global.pm_agent.get("/manager/");
 
     expect(res.statusCode).toBe(200);
 
