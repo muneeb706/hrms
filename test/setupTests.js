@@ -17,6 +17,8 @@ module.exports = async () => {
     global.employee_agent = request.agent(app);
     global.pm_agent = request.agent(app);
 
+    console.log(global.admin_agent)
+
     console.log("Logging in users...");
     await loginAs(admin_agent, "admin@admin.com", "admin123");
     await loginAs(employee_agent, "employee1@employee.com", "123456");
