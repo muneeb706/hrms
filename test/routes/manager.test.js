@@ -1,11 +1,16 @@
 const { expect, beforeAll, afterAll } = require("@jest/globals");
 const cheerio = require("cheerio");
 
+const db = require("../../db");
+const request = require("supertest");
+
+
 describe("Project Manager Routes", () => {
   let pm_agent = null;
   
   beforeAll(async () => {
-    const request = require("supertest");
+    await db.connect();
+    const app = require("../../app");
     pm_agent = request.agent(app);
     const getRes = await pm_agent.get("/");
     const $ = cheerio.load(getRes.text);
@@ -21,6 +26,7 @@ describe("Project Manager Routes", () => {
 
   afterAll(async () => {
     await pm_agent.get("/logout");
+    await db.close();
   });
 
   test("GET / should render project manager home page", async () => {
