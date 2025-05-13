@@ -5,7 +5,6 @@ const cheerio = require("cheerio");
 const execSync = require("child_process").execSync;
 
 global.admin_agent = null;
-global.employee_agent = null;
 global.csrfToken = null;
 global.app = null;
 
@@ -19,14 +18,11 @@ module.exports = async () => {
 
     global.app = require("../app");
     global.admin_agent = request.agent(app);
-    global.employee_agent = request.agent(app);
     global.csrfToken = null;
     console.log("Agents created");
 
     await loginAs(global.admin_agent, "admin@admin.com", "admin123");
     console.log("Admin logged in");
-    await loginAs(global.employee_agent, "employee1@employee.com", "123456");
-    console.log("Employee logged in");
   } catch (error) {
     console.error("Setup failed:", error);
     throw error;
