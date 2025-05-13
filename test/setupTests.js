@@ -1,34 +1,26 @@
 const db = require("../db");
 const request = require("supertest");
 const cheerio = require("cheerio");
-const seedUsers = require("../seed/user-seeder");
+const execSync = require("child_process").execSync;
 
 global.admin_agent = null;
 global.employee_agent = null;
 global.pm_agent = null;
+global.csrfToken = null;
 
 module.exports = async () => {
-  try {
-    // seedUsers will create connection with db and will not close it
-    await seedUsers(closeConn = false);
-    
+  await db.connect().then(() => {
+    execSync("NODE_ENV=test node seed/user-seeder.js");
     const app = require("../app");
-    global.admin_agent = request.agent(app);
-    global.employee_agent = request.agent(app);
-    global.pm_agent = request.agent(app);
+    admin_agent = request.agent(app);
+    employee_agent = request.agent(app);
+    pm_agent = request.agent(app);
+    csrfToken = null;
+  });
 
-    console.log(global.admin_agent)
-
-    console.log("Logging in users...");
-    await loginAs(admin_agent, "admin@admin.com", "admin123");
-    await loginAs(employee_agent, "employee1@employee.com", "123456");
-    await loginAs(pm_agent, "pm@pm.com", "pm1234");
-
-    console.log("Test setup completed successfully.");
-  } catch (error) {
-    console.error("Error during test setup:", error);
-    process.exit(1); // Exit with failure
-  }
+  await loginAs(admin_agent, "admin@admin.com", "admin123");
+  await loginAs(employee_agent, "employee1@employee.com", "123456");
+  await loginAs(pm_agent, "pm@pm.com", "pm1234");
 };
 
 async function loginAs(agent, email, password) {

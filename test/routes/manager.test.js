@@ -1,7 +1,7 @@
 const { expect } = require("@jest/globals");
 const cheerio = require("cheerio");
 
-describe("Employee Routes", () => {
+describe("Project Manager Routes", () => {
   test("GET / should render project manager home page", async () => {
     const res = await pm_agent.get("/manager/");
 

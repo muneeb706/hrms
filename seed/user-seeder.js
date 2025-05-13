@@ -1,14 +1,31 @@
 /**
  * This script seeds the User collection in the MongoDB database.
- * It can be run as a standalone script or imported as a module.
+ *
+ * It first connects to the MongoDB database using Mongoose.
+ * Then, it creates an array of new User instances with predefined data.
+ * Each User instance represents a document that will be inserted into the User collection.
+ *
+ * Each User document has the following fields:
+ * - type: The role of the user (e.g., "project_manager", "accounts_manager", "employee").
+ * - email: The email address of the user.
+ * - password: The hashed password of the user. The password is hashed using bcrypt.
+ * - name: The name of the user.
+ * - dateOfBirth: The date of birth of the user.
+ * - contactNumber: The contact number of the user.
+ *
  */
 
-const User = require("../models/user");
-const bcrypt = require("bcrypt-nodejs");
-const mongoose = require("mongoose");
+let User = require("../models/user");
+let bcrypt = require("bcrypt-nodejs");
+let mongoose = require("mongoose");
+
 const db = require("../db");
 
-const users = [
+db.connect()
+  .then(() => console.log("Database connected"))
+  .catch((err) => console.error("Database connection error", err));
+
+let users = [
   new User({
     type: "project_manager",
     email: "pm@pm.com",
@@ -51,49 +68,20 @@ const users = [
   }),
 ];
 
-/**
- * Seeds the database with predefined users.
- */
-const seedUsers = async (closeConn = true) => {
-  try {
-    console.log("Connecting to the database...");
-    await db.connect();
-    console.log("Database connected.");
-
-    for (let user of users) {
-      const existingUser = await User.findOne({ email: user.email });
-      if (existingUser) {
-        console.log(`User with email ${user.email} already exists.`);
-      } else {
-        await user.save();
-        console.log(`User with email ${user.email} added.`);
-      }
-    }
-
-    console.log("All users seeded successfully.");
-  } catch (error) {
-    console.error("Error seeding users:", error);
-    throw error;
-  } finally {
-    if (closeConn) {
-      await mongoose.disconnect();
-      console.log("Database connection closed.");
+(async function () {
+  for (let user of users) {
+    let existingUser = await User.findOne({ email: user.email });
+    if (existingUser) {
+      console.log(`User with email ${user.email} already exists.`);
+      break;
+    } else {
+      await user.save();
     }
   }
-};
+  exit();
+})();
 
-// Export the function for use in other scripts
-module.exports = seedUsers;
-
-// If the script is run directly, execute the seeding process
-if (require.main === module) {
-  seedUsers()
-    .then(() => {
-      console.log("Seeding completed successfully.");
-      process.exit(0); // Exit with success
-    })
-    .catch((error) => {
-      console.error("Seeding failed:", error);
-      process.exit(1); // Exit with failure
-    });
+function exit() {
+  mongoose.disconnect();
+  console.log("Users Added...")
 }
