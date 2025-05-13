@@ -11,8 +11,8 @@ global.csrfToken = null;
 module.exports = async () => {
   await db.connect().then(() => {
     console.log("Database connected");
-    execSync("NODE_ENV=test node seed/user-seeder.js");
-    execSync("NODE_ENV=test node seed/user-seeder.js");
+    //{ stdio: "inherit" } will show the output of the command in the console
+    execSync("NODE_ENV=test node seed/user-seeder.js", { stdio: "inherit" });
     console.log("Database seeded");
     const app = require("../app");
     admin_agent = request.agent(app);
