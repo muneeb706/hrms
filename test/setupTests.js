@@ -9,27 +9,21 @@ global.pm_agent = null;
 global.csrfToken = null;
 
 module.exports = async () => {
-  try {
-    console.log("Connecting to the database...");
-    await db.connect();
-    console.log("Database connected. Seeding data...");
+  await db.connect().then(() => {
+    console.log("Database connected");
     execSync("NODE_ENV=test node seed/user-seeder.js");
-    console.log("Data seeded. Initializing agents...");
-
+    execSync("NODE_ENV=test node seed/user-seeder.js");
+    console.log("Database seeded");
     const app = require("../app");
     admin_agent = request.agent(app);
     employee_agent = request.agent(app);
     pm_agent = request.agent(app);
+    csrfToken = null;
+  });
 
-    await loginAs(admin_agent, "admin@admin.com", "admin123");
-    await loginAs(employee_agent, "employee1@employee.com", "123456");
-    await loginAs(pm_agent, "pm@pm.com", "pm1234");
-
-    console.log("Test setup completed successfully.");
-  } catch (error) {
-    console.error("Error during test setup:", error);
-    process.exit(1);
-  }
+  await loginAs(admin_agent, "admin@admin.com", "admin123");
+  await loginAs(employee_agent, "employee1@employee.com", "123456");
+  await loginAs(pm_agent, "pm@pm.com", "pm1234");
 };
 
 async function loginAs(agent, email, password) {
