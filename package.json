@@ -19,7 +19,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^4.0.0",
     "moment": "^2.27.0",
-    "mongoose": "^5.7.5",
+    "mongoose": "^8.14.2",
     "mongoose-type-email": "^1.0.2",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
