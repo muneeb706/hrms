@@ -6,8 +6,8 @@ const execSync = require("child_process").execSync;
 
 global.admin_agent = null;
 global.employee_agent = null;
-global.pm_agent = null;
 global.csrfToken = null;
+global.app = null;
 
 module.exports = async () => {
   try {
@@ -17,10 +17,9 @@ module.exports = async () => {
     execSync("NODE_ENV=test node seed/user-seeder.js");
     console.log("Database seeded");
 
-    const app = require("../app");
+    global.app = require("../app");
     global.admin_agent = request.agent(app);
     global.employee_agent = request.agent(app);
-    global.pm_agent = request.agent(app);
     global.csrfToken = null;
     console.log("Agents created");
 
@@ -28,8 +27,6 @@ module.exports = async () => {
     console.log("Admin logged in");
     await loginAs(global.employee_agent, "employee1@employee.com", "123456");
     console.log("Employee logged in");
-    await loginAs(global.pm_agent, "pm@pm.com", "pm1234");
-     console.log("PM logged in");
   } catch (error) {
     console.error("Setup failed:", error);
     throw error;
