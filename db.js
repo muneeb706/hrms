@@ -3,8 +3,6 @@ require("dotenv").config();
 
 mongoose.Promise = global.Promise;
 
-mongoose.Promise = global.Promise;
-
 const connect = (opts = {}) => {
   let url;
   switch (process.env.NODE_ENV) {

@@ -1,7 +1,33 @@
-const { expect } = require("@jest/globals");
+const { expect, beforeAll, afterAll } = require("@jest/globals");
 const cheerio = require("cheerio");
+const db = require("../../db");
+const request = require("supertest");
 
-describe("Employee Routes", () => {
+
+describe("Project Manager Routes", () => {
+  let pm_agent = null;
+  
+  beforeAll(async () => {
+    await db.connect();
+    const app = require("../../app");
+    pm_agent = request.agent(app);
+    const getRes = await pm_agent.get("/");
+    const $ = cheerio.load(getRes.text);
+    const csrfToken = $('input[name="_csrf"]').val();
+    
+    await pm_agent.post("/login").send({
+        _csrf: csrfToken,
+        email: "pm@pm.com",
+        password: "pm1234",
+    });
+    
+  });
+
+  afterAll(async () => {
+    await pm_agent.get("/logout");
+    await db.close();
+  });
+
   test("GET / should render project manager home page", async () => {
     const res = await pm_agent.get("/manager/");
 
