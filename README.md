@@ -56,3 +56,7 @@ Accounts Manager is also an employee with the ability to generate pay slip, set 
 
 ### Run Tests
 1. To run tests, in the terminal, at the root folder of application, type command **npm test**.
+
+<br/>
+
+**⚠️ Note: This repository is no longer maintained.**
