@@ -18,10 +18,10 @@ module.exports = async () => {
     global.employee_agent = request.agent(app);
     global.pm_agent = request.agent(app);
 
-    console.log("Logging users.");
-    await loginAs(admin_agent, "admin@admin.com", "admin123");
-    await loginAs(employee_agent, "employee1@employee.com", "123456");
-    await loginAs(pm_agent, "pm@pm.com", "pm1234");
+    console.log("Logging in users...");
+    await loginAs(global.admin_agent, "admin@admin.com", "admin123");
+    await loginAs(global.employee_agent, "employee1@employee.com", "123456");
+    await loginAs(global.pm_agent, "pm@pm.com", "pm1234");
 
     console.log("Test setup completed successfully.");
   } catch (error) {

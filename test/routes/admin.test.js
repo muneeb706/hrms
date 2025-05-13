@@ -5,7 +5,7 @@ const User = require("../../models/user");
 
 describe("Admin Routes", () => {
   test("GET / should render admin home page", async () => {
-    const res = await admin_agent.get("/admin/");
+    const res = await global.admin_agent.get("/admin/");
 
     expect(res.statusCode).toBe(200);
 
@@ -20,7 +20,7 @@ describe("Admin Routes", () => {
   });
 
   test("GET /admin/view-all-employees should return all employees", async () => {
-    const res = await admin_agent.get("/admin/view-all-employees");
+    const res = await global.admin_agent.get("/admin/view-all-employees");
     expect(res.statusCode).toBe(200);
 
     const $ = cheerio.load(res.text);
@@ -42,7 +42,7 @@ describe("Admin Routes", () => {
       db.close();
     });
 
-    const res = await admin_agent.get(`/admin/employee-profile/${employeeId}`);
+    const res = await global.admin_agent.get(`/admin/employee-profile/${employeeId}`);
     expect(res.statusCode).toBe(200);
 
     const $ = cheerio.load(res.text);

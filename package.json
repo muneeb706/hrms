@@ -32,7 +32,7 @@
     "supertest": "^6.3.4"
   },
   "jest": {
-    "setupFilesAfterEnv": ["./test/setupTests.js"],
+    "globalSetup": "./test/setupTests.js",
     "globalTeardown": "./test/teardownTests.js",
     "collectCoverage": true,
     "collectCoverageFrom": [
