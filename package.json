@@ -40,8 +40,12 @@
       "!<rootDir>/public/**",
       "!<rootDir>/coverage/**",
       "!<rootDir>/test/**",
+      "!<rootDir>/seed/**",
       "!<rootDir>/node_modules/**"
     ],
     "coverageProvider": "v8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
